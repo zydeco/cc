@@ -1,0 +1,14 @@
+{
+    name="ui",
+    version="0.0",
+    dst="ui/",
+    files={
+        "init.lua",
+        "components/box.lua",
+        "components/button.lua",
+        "components/init.lua",
+        "components/label.lua",
+        "components/list.lua",
+        "components/tabbar.lua",
+    },
+}
