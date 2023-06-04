@@ -74,7 +74,9 @@ local function run(ui)
         drawViews(ui.term, ui.base.subviews, 1, 1)
         showDebugMsg(ui)
         local event, p1, p2, p3 = os.pullEvent()
-        ui.msg = (event or "") .. "," .. (p1 or "") .. "," .. (p2 or "") .. "," .. (p3 or "")
+        if string.sub(event, 1, 6) ~= "_CCPC_" then
+            ui.msg = (event or "") .. "," .. (p1 or "") .. "," .. (p2 or "") .. "," .. (p3 or "")
+        end
         if event == "mouse_click" or event == "mouse_up" or event == "monitor_touch" or event == "mouse_scroll" then
             -- mouse event
             local hit, hitX, hitY = hitTest(ui.base.subviews, p2-1, p3-1)
