@@ -53,12 +53,10 @@ local function drawViews(term, views, dx, dy)
 end
 
 local function showDebugMsg(ui)
-    if ui.debug and ui.msg then
-        local term = ui.term
+    if ui.msg and type(ui.debug) == "table" then
+        local term = ui.debug
         local x,y=term.getSize()
-        term.setCursorPos(1,y)
-        term.setBackgroundColor(colors.black)
-        term.setTextColor(colors.white)
+        term.setCursorPos(1,1)
         term.write(ui.msg .. string.rep(" ", x - string.len(ui.msg)))
     end
 end
@@ -112,6 +110,10 @@ local function run(ui)
     term.setTextColor(colors.white)
     term.setCursorPos(1,1)
     term.clear()
+    if type(ui.debug) == "table" then
+        ui.debug.clear()
+    end
+    term.setCursorBlink(true)
 end
 
 local function timer(ui, interval, times, action, arg, view)

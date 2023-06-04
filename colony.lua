@@ -13,10 +13,12 @@ else
     end
 end
 
-local screen = term.current()
+local screen = window.create(term.current(), 1,1,26,20)
+screen.clear()
+local tw,th = term.current().getSize()
 local w,h = screen.getSize()
 local ui = UI.new(screen)
-ui.debug=true
+ui.debug = window.create(term.current(), 1,21,tw,1)
 
 local function notImplementedView(name)
     return UI.label{
