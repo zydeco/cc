@@ -14,7 +14,13 @@ function UI.box(arg)
         if self.bg then
             local absX = self.x + dx
             local absY = self.y + dy
-            paintutils.drawFilledBox(absX, absY, absX + self.w - 1, absY + self.h - 1, self.bg)
+            term.setBackgroundColor(self.bg)
+            local line=string.rep(" ", self.w)
+            for y=absY,absY + self.h - 1 do
+                term.setCursorPos(absX, y)
+                term.write(line)
+            end
+            --paintutils.drawFilledBox(absX, absY, absX + self.w - 1, absY + self.h - 1, self.bg)
         end
     end
     view.add = function(subview)
