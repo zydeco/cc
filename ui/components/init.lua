@@ -1,5 +1,6 @@
 require("ui/components/box")
 require("ui/components/label")
+require("ui/components/field")
 require("ui/components/button")
 require("ui/components/list")
 require("ui/components/tabbar")

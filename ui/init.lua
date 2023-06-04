@@ -37,9 +37,14 @@ local function hasView(views, target)
     return false
 end
 
-local function drawViews(term, views, dx, dy)
+local function drawViews(ui, views, dx, dy)
+    local term = ui.term
     for i=1,#views do
         local view = views[i]
+        view.abs = {
+            x = view.x + dx,
+            y = view.y + dy
+        }
         -- draw this view
         if not view.hidden then
             if view.dirty then
@@ -47,7 +52,7 @@ local function drawViews(term, views, dx, dy)
                 view.dirty = false
             end
             -- draw subviews
-            drawViews(term, view.subviews or {}, view.x + dx, view.y + dy)
+            drawViews(ui, view.subviews or {}, view.x + dx, view.y + dy)
         end
     end
 end
@@ -61,6 +66,65 @@ local function showDebugMsg(ui)
     end
 end
 
+local function handleEvent(ui)
+    local event, p1, p2, p3 = os.pullEvent()
+    if string.sub(event, 1, 6) ~= "_CCPC_" then
+        ui.msg = (event or "") .. "," .. (p1 or "") .. "," .. (p2 or "") .. "," .. (p3 or "")
+    end
+    if event == "mouse_click" or event == "mouse_up" or event == "monitor_touch" or event == "mouse_scroll" then
+        -- mouse event
+        local hit, hitX, hitY = hitTest(ui.base.subviews, p2-1, p3-1)
+        if hit then
+            -- onEVENT(self, x, y, ...)
+            if event == "mouse_click" and hit.onMouseDown then
+                ui.keyHandler = nil
+                hit.onMouseDown(hit, hitX, hitY, p1)
+            elseif event == "mouse_up" and hit.onMouseUp then
+                hit.onMouseUp(hit, hitX, hitY, p1)
+            elseif event == "monitor_touch" and hit.onTouch then
+                hit.onTouch(hit, hitX, hitY)
+            elseif event == "mouse_scroll" and hit.onScroll then
+                hit.onScroll(hit, hitX, hitY, p1) -- direction
+            end
+        end
+    elseif event == "timer" and ui.timers[p1] then
+        local timer = ui.timers[p1]
+        ui.timers[p1] = nil
+        -- fire
+        if timer.view == nil or (timer.view.hidden == false and hasView(ui.views, timer.view)) then
+            timer.action(timer.arg)
+        end
+        -- reschedule
+        if timer.times ~= nil then
+            timer.times = timer.times - 1
+        end
+        if timer.times == nil or timer.times > 0 then
+            ui.timers[os.startTimer(timer.interval)] = timer
+        end
+    elseif event == "key" and ui.keyHandler and ui.keyHandler.onKeyDown then
+        -- onKeyDown(self, key, held)
+        ui.keyHandler.onKeyDown(ui.keyHandler, p1, p2)
+    elseif event == "key_up" and ui.keyHandler and ui.keyHandler.onKeyUp then
+        -- onKeyUp(self, key)
+        ui.keyHandler.onKeyUp(ui.keyHandler, p1)
+    elseif event == "char" and ui.keyHandler and ui.keyHandler.onChar then
+        -- onChar(self, char)
+        ui.keyHandler.onChar(ui.keyHandler, p1)
+    end
+end
+
+local function handleField(ui)
+    local term = ui.term
+    local kh = ui.keyHandler
+    if kh then
+        term.setTextColor(kh.cursorColor or kh.fg)
+        term.setCursorPos(kh.abs.x + kh.cursor, kh.abs.y)
+        term.setCursorBlink(true)
+    else
+        term.setCursorBlink(false)
+    end
+end
+
 local function run(ui)
     local term = ui.term
     term.setCursorBlink(false)
@@ -70,43 +134,11 @@ local function run(ui)
     term.setTextColor(colors.black)
     term.clear()
     while ui.running do
-        -- draw
-        drawViews(ui.term, ui.base.subviews, 1, 1)
+        drawViews(ui, ui.base.subviews, 1, 1)
         showDebugMsg(ui)
-        local event, p1, p2, p3 = os.pullEvent()
-        if string.sub(event, 1, 6) ~= "_CCPC_" then
-            ui.msg = (event or "") .. "," .. (p1 or "") .. "," .. (p2 or "") .. "," .. (p3 or "")
-        end
-        if event == "mouse_click" or event == "mouse_up" or event == "monitor_touch" or event == "mouse_scroll" then
-            -- mouse event
-            local hit, hitX, hitY = hitTest(ui.base.subviews, p2-1, p3-1)
-            if hit then
-                -- onEVENT(self, x, y, ...)
-                if event == "mouse_click" and hit.onMouseDown then
-                    hit.onMouseDown(hit, hitX, hitY, p1)
-                elseif event == "mouse_up" and hit.onMouseUp then
-                    hit.onMouseUp(hit, hitX, hitY, p1)
-                elseif event == "monitor_touch" and hit.onTouch then
-                    hit.onTouch(hit, hitX, hitY)
-                elseif event == "mouse_scroll" and hit.onScroll then
-                    hit.onScroll(hit, hitX, hitY, p1) -- direction
-                end
-            end
-        elseif event == "timer" and ui.timers[p1] then
-            local timer = ui.timers[p1]
-            ui.timers[p1] = nil
-            -- fire
-            if timer.view == nil or (timer.view.hidden == false and hasView(ui.views, timer.view)) then
-                timer.action(timer.arg)
-            end
-            -- reschedule
-            if timer.times ~= nil then
-                timer.times = timer.times - 1
-            end
-            if timer.times == nil or timer.times > 0 then
-                ui.timers[os.startTimer(timer.interval)] = timer
-            end
-        end
+        handleField(ui)
+        handleEvent(ui)
+        handleField(ui)
     end
     term.setBackgroundColor(colors.black)
     term.setTextColor(colors.white)
@@ -141,6 +173,7 @@ function UI.new(term)
     }
     local w, h = term.getSize()
     ui.base = UI.box({x=1, y=1, w=w, h=h, bg=colors.white})
+    ui.base.ui = ui
     ui.run = function()
         run(ui)
     end

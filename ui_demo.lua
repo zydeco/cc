@@ -1,11 +1,30 @@
 require("ui")
 
-local ui = UI.new(term.current())
-ui.debug=true
+local tw,th = term.current().getSize()
+local screen = window.create(term.current(), 1,1,tw,th)
+local w,h = screen.getSize()
+local ui = UI.new(screen)
+ui.debug = window.create(term.current(), 1,th,tw,1)
+
 local label = UI.label({
     text="Hello, world", 
     x=0, y=0, w=20, h=1, bg=colors.blue, fg=colors.yellow})
 ui.add(label)
+
+local field = UI.field({
+    placeholder={
+        text="Hello, world",
+        color=colors.lightGray
+    },
+    text = "hell",
+    x=2, y=2, w=16, h=1, 
+    bg=colors.blue, fg=colors.yellow,
+    onChange=function(self, text)
+        label.text = text
+        label.redraw()
+    end
+})
+ui.add(field)
 
 local btn = UI.button({
     text="Bye!!", bg=colors.orange, fg=colors.green,
@@ -48,11 +67,11 @@ ui.add(UI.list({
     bgSelected=colors.red,
     fgSelected=colors.black}))
 
-local timeLabel = UI.label({text="1", x=2, y=2, w=21, h=1, bg=colors.red})
+local timeLabel = UI.label({text="1", x=2, y=25, w=5, h=1, bg=colors.red})
 timeLabel.align = 1
 ui.add(timeLabel)
 local x = 1
-ui.timer(1.0, 3, function()
+ui.timer(1.0, nil, function()
     x = x + 1
     timeLabel.text = x
     timeLabel.redraw()

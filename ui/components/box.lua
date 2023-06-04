@@ -1,3 +1,11 @@
+local function forEachSubview(view, f)
+    f(view)
+    local subviews = view.subviews or {}
+    for i=1, #subviews do
+        forEachSubview(views[i], f)
+    end
+end
+
 function UI.box(arg)
     local view = {
         x=arg.x,
@@ -31,6 +39,9 @@ function UI.box(arg)
         end
         table.insert(view.subviews, subview)
         subview.parent=view
+        forEachSubview(subview, function(v)
+            v.ui = view.ui
+        end)
     end
     view.remove = function(subview)
         if subview.parent == view then
