@@ -14,14 +14,13 @@ else
 end
 
 local screen = window.create(term.current(), 1,1,26,20)
-screen.clear()
 local tw,th = term.current().getSize()
 local w,h = screen.getSize()
 local ui = UI.new(screen)
 ui.debug = window.create(term.current(), 1,21,tw,1)
 
 local function notImplementedView(name)
-    return UI.label{
+    return UI.Label.new{
         x=0,y=0,w=30,h=3,
         bg=colors.white, fg=colors.red,
         text=name .. " not implemented",
@@ -39,27 +38,29 @@ end
 local statusBarWidth = 8 + digits(os.day())
 
 -- colony name
-ui.add(UI.label{
+ui:add(UI.Label.new{
     x=0,y=0,w=w-statusBarWidth,h=1,text=colony.getColonyName(),
     bg=colors.black, fg=colors.white
 })
 
 -- date/time
-local statusBar = UI.label{
+local statusBar = UI.Label.new{
     x=w-statusBarWidth, y=0, w=statusBarWidth, h=1, text=formatTime(), align=UI.RIGHT,
     bg=colors.black, fg=colors.white
 }
-statusBar.onMouseUp = function() ui.stop() end
-ui.add(statusBar)
+statusBar.onMouseUp = function() 
+    ui:stop()
+end
+ui:add(statusBar)
 
 -- update every 6 game minutes (5 seconds)
 -- TODO: accurately
 local tabBar = nil
-ui.timer(5.0, nil, function()
+ui:addTimer(5.0, nil, function()
     statusBar.text=formatTime()
-    statusBar.redraw()
+    statusBar:redraw()
     if tabBar and tabBar.currentTab and tabBar.currentTab.onShow then
-        tabBar.currentTab.onShow()
+        tabBar.currentTab:onShow()
     end
 end)
 
@@ -101,7 +102,7 @@ end
 
 -- overview view
 local function overview(colony)
-    local box = UI.box{
+    local box = UI.Box.new{
         x=0,y=0,w=contentWidth,h=contentHeight,bg=colors.white
     }
 
@@ -115,44 +116,44 @@ local function overview(colony)
     local y = 1
 
     -- happiness
-    box.add(UI.label{x=labelX, y=y, text="Happiness:"})
-    local happinessValue = UI.label{x=valueX, y=y, w=valueW, text="n/a"}
-    box.add(happinessValue)
+    box:add(UI.Label.new{x=labelX, y=y, text="Happiness:"})
+    local happinessValue = UI.Label.new{x=valueX, y=y, w=valueW, text="n/a"}
+    box:add(happinessValue)
 
     -- population
-    box.add(UI.label{x=labelX, y=y+1, text="Population:"})
-    local populationValue = UI.label{x=valueX, y=y+1, w=valueW, text="n/a"}
-    box.add(populationValue)
+    box:add(UI.Label.new{x=labelX, y=y+1, text="Population:"})
+    local populationValue = UI.Label.new{x=valueX, y=y+1, w=valueW, text="n/a"}
+    box:add(populationValue)
 
     -- unemployed
-    local unemployedValue = UI.label{x=labelX+2, y=y+2, w=infoW, fg=colors.red}
-    box.add(unemployedValue)
+    local unemployedValue = UI.Label.new{x=labelX+2, y=y+2, w=infoW, fg=colors.red}
+    box:add(unemployedValue)
 
     -- homeless
-    local homelessValue = UI.label{x=labelX+2, y=y+3, w=infoW, fg=colors.red}
-    box.add(homelessValue)
+    local homelessValue = UI.Label.new{x=labelX+2, y=y+3, w=infoW, fg=colors.red}
+    box:add(homelessValue)
 
     -- visitors
-    box.add(UI.label{x=labelX, y=y+4, text="Visitors:"})
-    local visitorsValue = UI.label{x=valueX, y=y+4, w=valueW, text="n/a"}
-    box.add(visitorsValue)
+    box:add(UI.Label.new{x=labelX, y=y+4, text="Visitors:"})
+    local visitorsValue = UI.Label.new{x=valueX, y=y+4, w=valueW, text="n/a"}
+    box:add(visitorsValue)
 
     -- buildings
-    box.add(UI.label{x=labelX, y=y+5, text="Buildings:"})
-    local buildingsValue = UI.label{x=valueX, y=y+5, w=valueW, text="n/a"}
-    box.add(buildingsValue)
+    box:add(UI.Label.new{x=labelX, y=y+5, text="Buildings:"})
+    local buildingsValue = UI.Label.new{x=valueX, y=y+5, w=valueW, text="n/a"}
+    box:add(buildingsValue)
 
     -- under construction
-    local underConstructionValue = UI.label{x=labelX+2, y=y+6, w=infoW, fg=colors.blue}
-    box.add(underConstructionValue)
+    local underConstructionValue = UI.Label.new{x=labelX+2, y=y+6, w=infoW, fg=colors.blue}
+    box:add(underConstructionValue)
 
     -- under renovation
-    local underRenovationValue = UI.label{x=labelX+2, y=y+7, w=infoW, fg=colors.blue}
-    box.add(underRenovationValue)
+    local underRenovationValue = UI.Label.new{x=labelX+2, y=y+7, w=infoW, fg=colors.blue}
+    box:add(underRenovationValue)
     
     -- work orders
-    local workOrdersValue = UI.label{x=labelX, y=y+8, w=infoW, fg=colors.green}
-    box.add(workOrdersValue)
+    local workOrdersValue = UI.Label.new{x=labelX, y=y+8, w=infoW, fg=colors.green}
+    box:add(workOrdersValue)
 
     box.onShow = function()
         -- update values
@@ -203,12 +204,12 @@ local function overview(colony)
             return order.type ~= "WorkOrderMiner"
         end))
         workOrdersValue.hidden = (#workOrders == 0)
-        box.redraw()
+        box:redraw()
     end
     return box
 end
 
-tabBar = UI.tabBar{x=0,y=1,w=ui.base.w,h=ui.base.h-1,bg=colors.black, tabs={
+tabBar = UI.TabBar.new{x=0,y=1,w=ui.base.w,h=ui.base.h-1,bg=colors.black, tabs={
     {
         bg=colors.lightGray, fg=colors.black,
         key="O", name="Overview",
@@ -217,7 +218,7 @@ tabBar = UI.tabBar{x=0,y=1,w=ui.base.w,h=ui.base.h-1,bg=colors.black, tabs={
     {
         bg=colors.lime, fg=colors.black,
         key="C", name="Citizens",
-        content=UI.label({
+        content=UI.Label.new({
             x=0,y=0,w=20,h=2,
             text="This is the citizens",
         })
@@ -253,6 +254,6 @@ tabBar = UI.tabBar{x=0,y=1,w=ui.base.w,h=ui.base.h-1,bg=colors.black, tabs={
         content=notImplementedView("Map")
     },
 }}
-ui.add(tabBar)
+ui:add(tabBar)
 
-ui.run()
+ui:run()

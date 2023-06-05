@@ -3,6 +3,7 @@ UI = {
     CENTER=0,
     RIGHT=1,
 }
+UI.__index = UI
 
 local function hitTest(views, x, y)
     if #views == 0 then
@@ -48,7 +49,7 @@ local function drawViews(ui, views, dx, dy)
         -- draw this view
         if not view.hidden then
             if view.dirty then
-                view.draw(view, term, dx, dy)
+                view:draw(term, dx, dy)
                 view.dirty = false
             end
             -- draw subviews
@@ -125,7 +126,9 @@ local function handleField(ui)
     end
 end
 
-local function run(ui)
+function UI:run()
+    local ui = self
+    if self == nil then error("nil self") end
     local term = ui.term
     term.setCursorBlink(false)
     ui.running = true
@@ -150,7 +153,7 @@ local function run(ui)
     term.setCursorBlink(true)
 end
 
-local function timer(ui, interval, times, action, arg, view)
+function UI:addTimer(interval, times, action, arg, view)
     local timerID = os.startTimer(interval)
     local timer = {
         interval=interval,
@@ -159,30 +162,28 @@ local function timer(ui, interval, times, action, arg, view)
         arg=arg,
         view=view
     }
-    ui.timers[timerID] = timer
+    self.timers[timerID] = timer
     return timer
 end
 
 require("ui/components")
 
 function UI.new(term)
-    local ui = {
+    local self = setmetatable({
         running=false,
         term=term,
         timers={},
-    }
+    }, {__index=UI})
     local w, h = term.getSize()
-    ui.base = UI.box({x=1, y=1, w=w, h=h, bg=colors.white})
-    ui.base.ui = ui
-    ui.run = function()
-        run(ui)
-    end
-    ui.stop = function()
-        ui.running = false
-    end
-    ui.add = ui.base.add
-    ui.timer = function(interval, times, action, arg, view)
-        timer(ui, interval, times, action, arg, view)
-    end
-    return ui
+    self.base = UI.Box.new{x=1, y=1, w=w, h=h, bg=colors.white}
+    self.base.ui = self
+    return self
+end
+
+function UI:add(subview)
+    self.base:add(subview)
+end
+
+function UI:stop()
+    self.running = false
 end

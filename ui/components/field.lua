@@ -1,10 +1,14 @@
+local Label = require("ui/components/label")
+local Field = setmetatable({}, {__index = Label})
+Field.__index = Field
+
 local function blur(ui)
     local field = ui.keyHandler
     if field ~= nil then
         if field.onBlur then
             field.onBlur(field)
         end
-        field.redraw()
+        field:redraw()
         ui.keyHandler = nil
     end
 end
@@ -21,10 +25,10 @@ local function focus(ui, field)
     if field.onFocus then
         field.onFocus(field)
     end
-    field.redraw()
+    field:redraw()
 end
 
-local function onKeyDown(self, key)
+function Field:onKeyDown(key)
     if key == keys.left then
         self.cursor = math.max(0, self.cursor - 1)
     elseif key == keys.right then
@@ -48,10 +52,10 @@ local function onKeyDown(self, key)
     elseif key == keys["end"] or key == keys.down then
         self.cursor = string.len(self.text)
     end
-    self.redraw()
+    self:redraw()
 end
 
-local function onChar(self, char)
+function Field:onChar(char)
     local text = self.text
     local left = string.sub(text, 1, self.cursor)
     local right = string.sub(text, self.cursor + 1, -1)
@@ -60,11 +64,32 @@ local function onChar(self, char)
     if self.onChange then
         self.onChange(self, self.text)
     end
-    self.redraw()
+    self:redraw()
 end
 
-function UI.field(arg)
-    local view = UI.label{
+function Field:onMouseUp(x, y, button)
+    if button == 1 then
+        focus(self.ui, self)
+    end
+end
+
+function Field:draw(term, dx, dy)
+    local isActive = self.ui.keyHandler
+    local text = self.text
+    local fg = self.fg
+    if text == "" then
+        -- placeholder
+        self.text = self.placeholder.text
+        self.fg = self.placeholder.color
+    end
+    Label.draw(self, term, dx, dy)
+    -- restore
+    self.text = text
+    self.fg = fg
+end
+
+function Field.new(arg)
+    local self = setmetatable(Label.new({
         text=arg.text or "",
         x=arg.x,
         y=arg.y,
@@ -74,30 +99,10 @@ function UI.field(arg)
         fg=arg.fg or colors.white,
         align=arg.align or UI.LEFT,
         hidden=arg.hidden,
-    }
-    view.placeholder = arg.placeholder
-    view.onMouseUp = function(self, x, y, button)
-        if button == 1 then
-            focus(self.ui, self)
-        end
-    end
-    local drawSuper = view.draw
-    view.draw = function(self, term, dx, dy)
-        local isActive = self.ui.keyHandler
-        local text = self.text
-        local fg = self.fg
-        if text == "" then
-            -- placeholder
-            self.text = self.placeholder.text
-            self.fg = self.placeholder.color
-        end
-        drawSuper(self, term, dx, dy)
-        -- restore
-        self.text = text
-        self.fg = fg
-    end
-    view.onKeyDown = onKeyDown
-    view.onChar = onChar
-    view.onChange = arg.onChange
-    return view
+    }), {__index=Field})
+    self.placeholder = arg.placeholder
+    self.onChange = arg.onChange
+    return self
 end
+
+return Field
