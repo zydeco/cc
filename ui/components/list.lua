@@ -47,7 +47,7 @@ function List:draw(term, dx, dy)
         local textLines = stringLines(item)
         local text = string.sub((textLines[1 + y % rowHeight] or "") .. pad, 1, self.w)
         local bg = self.bg
-        if index % 2 == 1 and index <= #items then
+        if index % 2 == 0 and index <= #items then
             bg = self.bgAlternate
         end
         if needBar then
