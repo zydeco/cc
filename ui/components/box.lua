@@ -63,8 +63,8 @@ function Box:remove(subview)
 end
 
 function Box:removeFromSuperview()
-    if view.parent then
-        view.parent.remove(view)
+    if self.parent then
+        self.parent:remove(self)
     end
 end
 
