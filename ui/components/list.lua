@@ -39,7 +39,13 @@ function List:draw(term, dx, dy)
     local contentHeight = #items * rowHeight
     local itemsPerPage = math.floor(self.h / rowHeight)
     local pad = string.rep(" ", self.w)
-    self.maxScroll = 1 + #items - itemsPerPage
+    self.maxScroll = math.max(1, 1 + #items - itemsPerPage)
+    if self.scrollIndex > self.maxScroll then
+        self.scrollIndex = self.maxScroll
+    end
+    if self.selected and self.selected > #items then
+        self.selected = nil
+    end
     local needBar = contentHeight > self.h
     local contentWidth = self.w
     if needBar then
