@@ -37,7 +37,7 @@ local field = UI.Field.new{
 ui:add(field)
 
 local btn = UI.Button.new{
-    text="Bye!!", bg=colors.orange, fg=colors.green,
+    text="{green}By{fg}e{red}!", bg=colors.orange, fg=colors.black, align=UI.CENTER,
     x=3, y=14, w=10, h=3,
     action=function(self)
         ui:stop() 
@@ -56,7 +56,7 @@ ui:add(UI.List.new{
     rowHeight=2,
     items={
     "Lorem",
-    "ipsum\ndolor",
+    "ipsum\n{orange}dolor",
     "sit",
     "amet,",
     "consec",

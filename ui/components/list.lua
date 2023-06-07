@@ -1,3 +1,4 @@
+require("ui/text")
 local Box = require("ui/components/box")
 local List = setmetatable({}, {__index = Box})
 List.__index = List
@@ -37,19 +38,33 @@ function List:draw(term, dx, dy)
     local rowHeight = self.rowHeight
     local contentHeight = #items * rowHeight
     local itemsPerPage = math.floor(self.h / rowHeight)
-    self.maxScroll = 1 + #items - itemsPerPage
-    term.setTextColor(self.fg)
     local pad = string.rep(" ", self.w)
+    self.maxScroll = 1 + #items - itemsPerPage
     local needBar = contentHeight > self.h
+    local contentWidth = self.w
+    if needBar then
+        contentWidth = contentWidth - 2
+    end
+    local bg = self.bg
+    local fg = self.fg
     for y = 0, self.h-1 do
         local index = self.scrollIndex + math.floor(y / rowHeight)
         local item = self.items[index] or ""
         local textLines = stringLines(item)
-        local text = string.sub((textLines[1 + y % rowHeight] or "") .. pad, 1, self.w)
-        local bg = self.bg
-        if index % 2 == 0 and index <= #items then
-            bg = self.bgAlternate
+        local text = (textLines[1 + y % rowHeight] or "") .. pad
+        term.setCursorPos(self.x + dx, self.y + dy + y)
+        if index == self.selected then
+            fg = self.fgSelected
+            bg = self.bgSelected
+        else
+            fg = self.fg
+            if index % 2 == 0 and index <= #items then
+                bg = self.bgAlternate
+            else
+                bg = self.bg
+            end
         end
+        self.ui:drawStyledText(term, text, bg, fg, contentWidth, UI.LEFT)
         if needBar then
             local bar = "|"
             local barSize = self.h - 2
@@ -66,33 +81,11 @@ function List:draw(term, dx, dy)
             elseif y == scrollPos then
                 bar = "#"
             end
-            text = string.sub(text, 1, self.w - 2) .. " " .. bar
-        end
-        term.setCursorPos(self.x + dx, self.y + dy + y)
-        term.setBackgroundColor(bg)
-        if index == self.selected then
-            term.setTextColor(self.fgSelected)
-            term.setBackgroundColor(self.bgSelected)
-            if needBar then
-                term.write(string.sub(text, 1, self.w - 1))
-            else
-                term.write(text)
-            end
+
             term.setTextColor(self.fg)
-            if needBar then
-                term.setBackgroundColor(self.bg)
-                term.setCursorPos(self.x + dx + self.w - 1, self.y + dy + y)
-                term.write(string.sub(text, self.w, self.w))
-            end
-        else
-            if needBar then
-                term.write(string.sub(text, 1, self.w - 1))
-                term.setBackgroundColor(self.bg)
-                term.setCursorPos(self.x + dx + self.w - 1, self.y + dy + y)
-                term.write(string.sub(text, self.w, self.w))
-            else
-                term.write(text)
-            end
+            term.setBackgroundColor(bg)
+            term.setCursorPos(self.x + dx + self.w - 2, self.y + dy + y)
+            term.write(" " .. bar)
         end
     end
 end
