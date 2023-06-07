@@ -159,7 +159,11 @@ local function listPackages()
     print("Installed packages: ")
     for i = 1, #items do
         local pkg = getLocalPkg(items[i])
-        print(pkg.name .. " " .. pkg.version)
+        if pkg == nil then
+            print("invalid package: " .. items[i])
+        else
+            print(pkg.name .. " " .. pkg.version)
+        end
     end
 end
 
@@ -206,5 +210,5 @@ local command=table.remove(args, 1)
 if commands[command] ~= nil then
     commands[command](args)
 else
-    commands.help(args)
+    commands.help()
 end
