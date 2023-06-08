@@ -10,6 +10,7 @@
         "components/label.lua",
         "components/list.lua",
         "components/tabbar.lua",
+        "components/field.lua",
         "text.lua",
     },
 }
