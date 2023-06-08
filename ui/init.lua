@@ -75,10 +75,12 @@ local function handleEvent(ui)
     if event == "mouse_click" or event == "mouse_up" or event == "monitor_touch" or event == "mouse_scroll" then
         -- mouse event
         local hit, hitX, hitY = hitTest(ui.base.subviews, p2-1, p3-1)
+        if event ~= "mouse_scroll" then
+            ui.keyHandler = nil
+        end
         if hit then
             -- onEVENT(self, x, y, ...)
             if event == "mouse_click" and hit.onMouseDown then
-                ui.keyHandler = nil
                 hit.onMouseDown(hit, hitX, hitY, p1)
             elseif event == "mouse_up" and hit.onMouseUp then
                 hit.onMouseUp(hit, hitX, hitY, p1)
