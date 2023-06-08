@@ -34,7 +34,7 @@ local statusBar = UI.Label.new{
     x=w-statusBarWidth, y=0, w=statusBarWidth, h=1, text=formatTime(), align=UI.RIGHT,
     bg=colors.black, fg=colors.white
 }
-statusBar.onMouseUp = function() 
+statusBar.onMouseUp = function()
     ui:stop()
 end
 ui:add(statusBar)

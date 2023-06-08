@@ -18,10 +18,29 @@ function filter(list, keep)
     local filtered = {}
     for i=1,#list do
         if keep(list[i]) then
-            filtered[#filtered] = list[i]
+            filtered[1+#filtered] = list[i]
         end
     end
     return filtered
+end
+
+function map(list, mapper)
+    local mappedList = {}
+    for i=1,#list do
+        mappedList[1+#mappedList] = mapper(list[i])
+    end
+    return mappedList
+end
+
+function flatMap(list, mapper)
+    local mappedList = {}
+    for i=1,#list do
+        local mapped = mapper(list[i])
+        if mapped ~= nil then
+            mappedList[1+#mappedList] = mapped
+        end
+    end
+    return mappedList
 end
 
 function countMatching(list, matcher)

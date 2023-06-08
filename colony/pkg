@@ -1,0 +1,12 @@
+{
+    name="colony",
+    version="0.0",
+    dst="colony/",
+    files={
+        "../colony.lua",
+        "overview.lua",
+        "utils.lua",
+        "citizens.lua",
+        "stubs/save.lua"
+    },
+}
