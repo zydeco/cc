@@ -1,4 +1,4 @@
-function citizenRow(citizen, width)
+local function citizenRow(citizen, width)
     local statusSize = 2
     local name = string.sub(citizen.name, 1, width - statusSize)
     local padSize = width - string.len(name) - statusSize
@@ -20,19 +20,38 @@ function citizenRow(citizen, width)
     end
     local line1 = name .. string.rep(" ", padSize) .. warnIcon .. stateIcon
     local line2 = ""
-    local ageIcon = "{gray}" .. string.sub(citizen.age, 1, 1)
+    local ageIcon = "{gray}" .. citizen.age
     if citizen.work then
         local job = citizen.work.type
-        line2 = " " .. job .. " " .. citizen.work.level .. string.rep(" ", width - 3 - string.len(job) - 1) .. ageIcon
+        line2 = " " .. job .. " " .. citizen.work.level .. string.rep(" ", width - 3 - string.len(job) - UI.strlen(ageIcon)) .. ageIcon
     else
-        line2 = " {red}unemployed" .. string.rep(" ", width - 11 - 1) .. ageIcon
+        line2 = " {red}unemployed" .. string.rep(" ", width - 11 - UI.strlen(ageIcon)) .. ageIcon
     end
     return line1 .. "\n" .. line2
 end
 
-function shouldShowCitizen(citizen, filterText)
+local function shouldShowCitizen(citizen, filterText)
     return string.find(string.lower(citizen.name), filterText) ~= nil or
     (citizen.work ~= nil and string.find(string.lower(citizen.work.type), filterText) == 1)
+end
+
+local function reloadCitizens(colony, filterField, countLabel, citizenList)
+    local filterText = string.lower(filterField.text or "")
+    local visibleCitizens = filter(colony.getCitizens(), function(citizen)
+        return shouldShowCitizen(citizen, filterText)
+    end)
+    local hasScrollBar = (#visibleCitizens * citizenList.rowHeight) > citizenList.h
+    local rowWidth = citizenList.w
+    if hasScrollBar then
+        rowWidth = citizenList.w - 2
+    end
+    citizenList.items = map(visibleCitizens, function(citizen)
+        return citizenRow(citizen, rowWidth)
+    end)
+    citizenList:redraw()
+
+    countLabel.text = string.format("%d/%d", #visibleCitizens, colony.amountOfCitizens())
+    countLabel:redraw()
 end
 
 return function(colony, contentWidth, contentHeight)
@@ -47,7 +66,7 @@ local innerWidth = contentWidth - (2*margin)
 
 -- filter
 local filterField = UI.Field.new{
-    x=margin, y=1, w=innerWidth, h=1,
+    x=margin, y=1, w=innerWidth - 5, h=1,
     placeholder={
         text="Filter",
         color=colors.gray
@@ -58,6 +77,14 @@ local filterField = UI.Field.new{
     end
 }
 box:add(filterField)
+
+local countLabel = UI.Label.new{
+    x=margin + innerWidth - 5, y=1, w=5, h=1,
+    bg=colors.lightGray, fg=colors.gray,
+    align=UI.RIGHT,
+    text="0/0"
+}
+box:add(countLabel)
 
 -- list
 local citizenList = UI.List.new{
@@ -70,22 +97,15 @@ local citizenList = UI.List.new{
 }
 box:add(citizenList)
 
--- detail?
+local detailView = UI.Box.new{
+    x=0, y=0, w=contentWidth, h=contentHeight,
+    bg=colors.orange,
+    hidden=true
+}
+box:add(detailView)
 
 box.onShow = function(self)
-    local filterText = string.lower(filterField.text or "")
-    local visibleCitizens = filter(colony.getCitizens(), function(citizen)
-        return shouldShowCitizen(citizen, filterText)
-    end)
-    local hasScrollBar = #visibleCitizens > (citizenList.h * citizenList.rowHeight)
-    local rowWidth = citizenList.w
-    if hasScrollBar then
-        rowWidth = citizenList.w - 2
-    end
-    citizenList.items = map(visibleCitizens, function(citizen)
-        return citizenRow(citizen, rowWidth)
-    end)
-    citizenList:redraw()
+    reloadCitizens(colony, filterField, countLabel, citizenList)
 end
 
 box:onShow()
