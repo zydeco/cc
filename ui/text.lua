@@ -106,6 +106,11 @@ local function trimStyledText(items, n, align)
     end
 end
 
+-- length of string without counting style tags
+function UI.strlen(str)
+    return string.len(string.gsub(str, "{[^}]+}", ""))
+end
+
 -- draw styled text at current position
 function UI:drawStyledText(term, str, bg, fg, width, align)
     if str == nil then
