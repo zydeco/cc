@@ -17,7 +17,9 @@ local screen = window.create(term.current(), 1,1,26,20)
 local tw,th = term.current().getSize()
 local w,h = screen.getSize()
 local ui = UI.new(screen)
-ui.debug = window.create(term.current(), 1,21,tw,1)
+if th > 20 then
+    ui.debug = window.create(term.current(), 1,21,tw,1)
+end
 
 require("colony/utils")
 
