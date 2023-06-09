@@ -84,12 +84,13 @@ local function pkgUrl(name)
 end
 
 local function getRemotePkg(name)
+    local noCache = math.random()
     local baseUrl=pkgUrl(name)
-    local rawPkg = httpGet(baseUrl .. "/pkg")
+    local rawPkg = httpGet(baseUrl .. "/pkg?" .. noCache)
     if rawPkg == nil and string.sub(baseUrl, 1, 34) == "https://raw.githubusercontent.com/" then
         baseUrl = addBranch(baseUrl, "main")
         if baseUrl ~= nil then
-            rawPkg = httpGet(baseUrl .. "/pkg")
+            rawPkg = httpGet(baseUrl .. "/pkg?" .. noCache)
         end
     end
     if rawPkg == nil or rawPkg == "" then
