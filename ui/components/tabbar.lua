@@ -28,6 +28,11 @@ function TabBar.new(arg)
         text="Tab Bar", align=UI.CENTER,
     }
     self:add(self.label)
+    self.label.onMouseDown = function()
+        if self.currentTab and self.currentTab.onShow then
+            self.currentTab:onShow()
+        end
+    end
     self.tabs=tabs
 
     -- add content view
@@ -66,6 +71,9 @@ end
 
 function TabBar:selectTab(i)
     if self.selectedTab == i then
+        if self.currentTab.onShow then
+            self.currentTab:onShow()
+        end
         return
     end
     self.selectedTab = i
