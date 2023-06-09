@@ -56,7 +56,14 @@ function List:draw(term, dx, dy)
     for y = 0, self.h-1 do
         local index = self.scrollIndex + math.floor(y / rowHeight)
         local item = self.items[index] or ""
-        local textLines = stringLines(item)
+        local textLines = {}
+        if type(item) == "string" then
+            textLines = stringLines(item)
+        elseif type(item) == "table" then
+            textLines = stringLines(item.text)
+        else
+            error("unexpected item type " .. type(item))
+        end
         local text = (textLines[1 + y % rowHeight] or "") .. pad
         term.setCursorPos(self.x + dx, self.y + dy + y)
         if index == self.selected then
