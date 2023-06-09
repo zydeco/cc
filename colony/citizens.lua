@@ -27,7 +27,10 @@ local function citizenRow(citizen, width)
     else
         line2 = " {red}unemployed" .. string.rep(" ", width - 11 - UI.strlen(ageIcon)) .. ageIcon
     end
-    return line1 .. "\n" .. line2
+    return {
+        text=line1 .. "\n" .. line2,
+        citizen=citizen
+    }
 end
 
 local function shouldShowCitizen(citizen, filterText)
@@ -52,6 +55,24 @@ local function reloadCitizens(colony, filterField, countLabel, citizenList)
 
     countLabel.text = string.format("%d/%d", #visibleCitizens, colony.amountOfCitizens())
     countLabel:redraw()
+end
+
+function createDetailView(detailView)
+    local contentWidth = detailView.w
+    local contentHeight = detailView.h
+    detailView.nameLabel = UI.Label.new{
+        x=0, y=0, w=contentWidth, align=UI.CENTER
+    }
+    detailView:add(detailView.nameLabel)
+end
+
+function showDetailForCitizen(detailView, citizen)
+    detailView.hidden = false
+    if #detailView.subviews == 0 then
+        createDetailView(detailView)
+    end
+    detailView.nameLabel.text = citizen.name
+    detailView.parent:redraw()
 end
 
 return function(colony, contentWidth, contentHeight)
@@ -90,10 +111,7 @@ box:add(countLabel)
 local citizenList = UI.List.new{
     x=margin, y=2, w=innerWidth, h=contentHeight - 3,
     fg=colors.black, bg=colors.lightBlue, bgAlternate=colors.lightGray, bgSelected=colors.blue,
-    items={}, rowHeight=2,
-    onSelect=function()
-
-    end
+    items={}, rowHeight=2
 }
 box:add(citizenList)
 
@@ -104,11 +122,24 @@ local detailView = UI.Box.new{
 }
 box:add(detailView)
 
-box.onShow = function(self)
-    reloadCitizens(colony, filterField, countLabel, citizenList)
+citizenList.onSelect = function(self, index, item)
+    showDetailForCitizen(detailView, item.citizen)
 end
 
-box:onShow()
+box.onShow = function(self)
+    self.ui.msg="boxOnShow"
+    detailView.hidden = true
+    reloadCitizens(colony, filterField, countLabel, citizenList)
+    box:redraw()
+end
+
+box.refresh = function(self)
+    if detailView.hidden then
+        reloadCitizens(colony, filterField, countLabel, citizenList)
+    end
+end
+
+reloadCitizens(colony, filterField, countLabel, citizenList)
 
 return box
 end
