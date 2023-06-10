@@ -28,8 +28,10 @@ local function colorByName(name, bg, fg)
         return bg
     elseif name == "fg" then
         return fg
-    else
+    elseif colors[name] ~= nil then
         return colors[name]
+    else
+        error("invalid color " .. name)
     end
 end
 
