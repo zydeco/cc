@@ -111,6 +111,8 @@ function UI.strlen(str)
     return string.len(string.gsub(str, "{[^}]+}", ""))
 end
 
+local UI_TEXT_DEFAULT_TAG = "fg"
+
 -- draw styled text at current position
 function UI:drawStyledText(term, str, bg, fg, width, align)
     if str == nil then
@@ -118,7 +120,7 @@ function UI:drawStyledText(term, str, bg, fg, width, align)
     end
     term.setTextColor(fg)
     term.setBackgroundColor(bg)
-    local items = stringTags(str, "fg")
+    local items = stringTags(str, UI_TEXT_DEFAULT_TAG)
     local length = styledLength(items)
     -- first item can override alignment
     if type(items[1]) == "table" and items[1].align then
@@ -131,7 +133,7 @@ function UI:drawStyledText(term, str, bg, fg, width, align)
         if align == UI.RIGHT then
             x = x + (width - length)
         elseif align == UI.CENTER then
-            x = x + (width - length) / 2
+            x = x + math.floor((width - length) / 2)
         end
         term.setCursorPos(x, y)
     end
@@ -151,4 +153,38 @@ function UI.textLines(str)
         lines[#lines + 1] = line
     end
     return lines
+end
+
+function UI.textTagAt(str, width, align, tagName, col)
+    local items = stringTags(str, UI_TEXT_DEFAULT_TAG)
+    local length = styledLength(items)
+    local x = 0
+    local tagValue = nil
+    -- first item can override alignment
+    if type(items[1]) == "table" and items[1].align then
+        align = UI[string.upper(items[1].align)] or align
+    end
+    if length > width then
+        trimStyledText(items, length - width, align)
+    elseif length < width and align ~= UI.LEFT then
+        if align == UI.RIGHT then
+            x = (width - length)
+        elseif align == UI.CENTER then
+            x = math.floor((width - length) / 2)
+        end
+    end
+    if x > col then
+        return tagValue
+    end
+    for i=1,#items do
+        local item = items[i]
+        if type(item) == "string" then
+            x = x + string.len(item)
+            if x > col then
+                return tagValue
+            end
+        elseif type(item) == "table" and item[tagName] then
+            tagValue = item[tagName]
+        end
+    end
 end
