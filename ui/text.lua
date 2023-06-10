@@ -120,6 +120,10 @@ function UI:drawStyledText(term, str, bg, fg, width, align)
     term.setBackgroundColor(bg)
     local items = stringTags(str, "fg")
     local length = styledLength(items)
+    -- first item can override alignment
+    if type(items[1]) == "table" and items[1].align then
+        align = UI[string.upper(items[1].align)] or align
+    end
     if length > width then
         trimStyledText(items, length - width, align)
     elseif length < width and align ~= UI.LEFT then
@@ -139,4 +143,12 @@ function UI:drawStyledText(term, str, bg, fg, width, align)
             setTermStyle(term, item, bg, fg)
         end
     end
+end
+
+function UI.textLines(str)
+    local lines = {}
+    for line in string.gmatch(str, "[^\n]+") do
+        lines[#lines + 1] = line
+    end
+    return lines
 end

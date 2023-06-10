@@ -2,6 +2,9 @@ UI = {
     LEFT=-1,
     CENTER=0,
     RIGHT=1,
+    TOP=-1,
+    MIDDLE=0,
+    BOTTOM=1,
 }
 UI.__index = UI
 

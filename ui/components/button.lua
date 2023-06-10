@@ -11,7 +11,8 @@ function Button.new(arg)
         h=arg.h,
         bg=arg.bg or colors.black,
         fg=arg.fg or colors.white,
-        align=arg.align or 0,
+        align=arg.align or UI.CENTER,
+        verticalAlign=arg.verticalAlign or UI.MIDDLE,
         hidden=arg.hidden,
     }), {__index=Button})
     if arg.action then

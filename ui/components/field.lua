@@ -98,6 +98,7 @@ function Field.new(arg)
         bg=arg.bg or colors.black,
         fg=arg.fg or colors.white,
         align=arg.align or UI.LEFT,
+        verticalAlign=arg.verticalAlign or UI.TOP,
         hidden=arg.hidden,
     }), {__index=Field})
     self.placeholder = arg.placeholder

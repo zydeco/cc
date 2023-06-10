@@ -38,9 +38,9 @@ ui:add(field)
 
 local btn = UI.Button.new{
     text="{green}By{fg}e{red}!", bg=colors.orange, fg=colors.black, align=UI.CENTER,
-    x=3, y=14, w=10, h=3,
+    x=15, y=5, w=10, h=3,
     action=function(self)
-        ui:stop() 
+        ui:stop()
     end}
 ui:add(btn)
 
@@ -79,6 +79,16 @@ ui:add(UI.List.new{
     end,
     bg=colors.black, bgAlternate=colors.gray, fg=colors.white,
     bgSelected=colors.red,
-    fgSelected=colors.black})
+    fgSelected=colors.black
+})
 
+ui:add(UI.Label.new{
+    x=1, y=12, w=24, h=6,
+    bg=colors.lightGray,
+    text="Multi{purple}line\n" ..
+        "label {blue}with {bg=white}{green}c{orange}o{red}l{yellow}o{black}u{lightBlue}r{brown}s{gray}!\n" ..
+        "{align=center}and {brown}different\n" ..
+        "alignment\n" ..
+        "{align=right}on different lines"
+})
 ui:run()

@@ -3,14 +3,6 @@ local Box = require("ui/components/box")
 local List = setmetatable({}, {__index = Box})
 List.__index = List
 
-local function stringLines(str)
-    local lines = {}
-    for line in string.gmatch(str, "[^\n]+") do
-        lines[#lines + 1] = line
-    end
-    return lines
-end
-
 function List.new(arg)
     local self = setmetatable(Box.new({
         x=arg.x,
@@ -58,9 +50,9 @@ function List:draw(term, dx, dy)
         local item = self.items[index] or ""
         local textLines = {}
         if type(item) == "string" then
-            textLines = stringLines(item)
+            textLines = UI.textLines(item)
         elseif type(item) == "table" then
-            textLines = stringLines(item.text)
+            textLines = UI.textLines(item.text)
         else
             error("unexpected item type " .. type(item))
         end
