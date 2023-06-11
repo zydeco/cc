@@ -1,8 +1,25 @@
+local function getHappinessColor(happiness)
+    if happiness < 4 then
+        return "red"
+    elseif happiness < 6 then
+        return "orange"
+    elseif happiness < 9 then
+        return "green"
+    else
+        return "blue"
+    end
+end
+
+local function formatHappiness(value, format)
+    return string.format("{%s}%" .. format, getHappinessColor(value), value)
+end
+
 local function citizenRow(citizen, width)
-    local statusSize = 2
+    local statusSize = 3
     local name = string.sub(citizen.name, 1, width - statusSize)
     local padSize = width - string.len(name) - statusSize
     local warnIcon = " "
+    local happinessIcon = formatHappiness(citizen.happiness, "X")
     local stateIcon = " "
     local lowHealth = citizen.health and citizen.maxHealth and citizen.health < (citizen.maxHealth * 0.1)
     if lowHealth then
@@ -18,7 +35,7 @@ local function citizenRow(citizen, width)
         -- working?
         stateIcon = "{blue}w"
     end
-    local line1 = name .. string.rep(" ", padSize) .. warnIcon .. stateIcon
+    local line1 = name .. string.rep(" ", padSize) .. warnIcon .. happinessIcon .. stateIcon
     local line2 = ""
     local ageIcon = "{gray}" .. citizen.age
     if citizen.work then
