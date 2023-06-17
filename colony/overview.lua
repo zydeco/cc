@@ -11,6 +11,12 @@ local function overviewText(colony)
 
     -- citizens
     local citizens = colony.getCitizens()
+    local children = countMatching(citizens, function(citizen)
+        return citizen.age == "child"
+    end)
+    if children > 0 then
+        table.insert(lines, string.format("  {blue}%d children", children))
+    end
     local unemployed = countNilValues(citizens, "work")
     if unemployed > 0 then
         table.insert(lines, string.format("  {red}%d unemployed", unemployed))
