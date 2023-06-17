@@ -14,6 +14,10 @@ function digits(n)
     return 1 + math.floor(math.log(n, 10))
 end
 
+function sameLocation(a, b)
+    return a.x == b.x and a.y == b.y and a.z == b.z
+end
+
 function filter(list, keep)
     local filtered = {}
     for i=1,#list do

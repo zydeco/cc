@@ -1,9 +1,9 @@
-local function getHappinessColor(happiness)
-    if happiness < 4 then
+local function getRateColor(rate)
+    if rate < 0.4 then
         return "red"
-    elseif happiness < 6 then
+    elseif rate < 0.6 then
         return "orange"
-    elseif happiness < 9 then
+    elseif rate < 0.9 then
         return "green"
     else
         return "blue"
@@ -11,7 +11,7 @@ local function getHappinessColor(happiness)
 end
 
 local function formatHappiness(value, format)
-    return string.format("{%s}%" .. format, getHappinessColor(value), value)
+    return string.format("{%s}%" .. format, getRateColor(value / 10.0), value)
 end
 
 local function citizenRow(citizen, width)
@@ -37,7 +37,10 @@ local function citizenRow(citizen, width)
     end
     local line1 = name .. string.rep(" ", padSize) .. warnIcon .. happinessIcon .. stateIcon
     local line2 = ""
-    local ageIcon = "{gray}" .. citizen.age
+    local ageIcon = ""
+    if citizen.age ~= "adult" then
+        ageIcon = "{gray}" .. citizen.age
+    end
     if citizen.work then
         local job = citizen.work.type
         line2 = " " .. job .. " " .. citizen.work.level .. string.rep(" ", width - 3 - string.len(job) - UI.strlen(ageIcon)) .. ageIcon
@@ -46,7 +49,7 @@ local function citizenRow(citizen, width)
     end
     return {
         text=line1 .. "\n" .. line2,
-        citizen=citizen
+        citizen=citizen.id
     }
 end
 
@@ -74,22 +77,123 @@ local function reloadCitizens(colony, filterField, countLabel, citizenList)
     countLabel:redraw()
 end
 
-function createDetailView(detailView)
-    local contentWidth = detailView.w
-    local contentHeight = detailView.h
-    detailView.nameLabel = UI.Label.new{
-        x=0, y=0, w=contentWidth, align=UI.CENTER
-    }
-    detailView:add(detailView.nameLabel)
+local function dataField(name, value)
+    if name ~= "" then
+        name = name .. ": "
+    end
+    return string.format("%-10s%s", name, value)
 end
 
-function showDetailForCitizen(detailView, citizen)
-    detailView.hidden = false
-    if #detailView.subviews == 0 then
-        createDetailView(detailView)
+local function formatPos(pos)
+    return string.format("%d,%d,%d", pos.x, pos.y, pos.z)
+end
+
+local function formatHealth(citizen)
+    return string.format("{%s}%.2g/%d", getRateColor(citizen.health / citizen.maxHealth), citizen.health, citizen.maxHealth)
+end
+
+local function formatBuilding(building)
+    return building.type .. " " .. building.level
+end
+
+local function worksFromHome(citizen)
+    if citizen.work == nil or citizen.home == nil then
+        return false
     end
-    detailView.nameLabel.text = citizen.name
-    detailView.parent:redraw()
+    return sameLocation(citizen.work.location, citizen.home.location)
+end
+
+local function getCitizen(citizens, id)
+    for index, citizen in ipairs(citizens) do
+        if citizen.id == id then
+            return citizen
+        end
+    end
+    error("citizen " .. id .. " not found")
+end
+
+local function citizenName(citizens, id)
+    return getCitizen(citizens, id).name
+end
+
+local function getParents(citizens, id)
+    local parents = {}
+    for index, citizen in ipairs(citizens) do
+        if citizen.children and #citizen.children > 0 then
+            for index, childId in ipairs(citizen.children) do
+                if childId == id then
+                    table.insert(parents, citizen)
+                end
+            end
+        end
+    end
+    return parents
+end
+
+local function detailForCitizen(citizenId, citizens, showChildren)
+    local citizen = getCitizen(citizens, citizenId)
+    local lines = {
+        "{align=center}" .. citizen.name,
+        "{align=center}{gray}" .. citizen.age .. " " .. citizen.gender,
+        "{align=center}{gray}" .. citizen.state .. " " .. formatPos(citizen.location),
+        dataField("  Happy", formatHappiness(citizen.happiness, ".2f")),
+        dataField("  Health", formatHealth(citizen))
+    }
+
+    if citizen.betterFood then
+        table.insert(lines, "  {red}needs better food")
+    end
+
+    if citizen.homeless then 
+        table.insert(lines, "  {red}homeless")
+    else
+        local home = citizen.home
+        table.insert(lines, dataField("  Home", formatBuilding(home)))
+        table.insert(lines, dataField("", formatPos(home.location)))
+    end
+
+    if citizen.work == nil then
+        table.insert(lines, "  {red}unemployed")
+    elseif not worksFromHome(citizen) then
+        local work = citizen.work
+        table.insert(lines, dataField("  Job", formatBuilding(work)))
+        table.insert(lines, dataField("", formatPos(work.location)))
+    end
+
+    if citizen.armor > 0 then
+        table.insert(lines, dataField("  Armour", citizen.armor))
+    end
+    if citizen.toughness > 0 then
+        table.insert(lines, dataField("  Tough", citizen.toughness))
+    end
+
+    if #citizen.children > 0 then
+        if showChildren then
+            table.insert(lines, dataField("  Children", "{link=hideChildren}" .. #citizen.children .. "{link=}"))
+            for index, child in ipairs(citizen.children) do
+                local childName = citizenName(citizens, child)
+                table.insert(lines, "    {link=citizen/" .. child .. "}" .. childName .. "{link=}")
+            end
+        else
+            table.insert(lines, dataField("  Children", "{link=showChildren}" .. #citizen.children .. "{link=}"))
+        end
+    end
+
+    local parents = getParents(citizens, citizen.id)
+    if #parents > 0 then
+        table.insert(lines, "  Parents:")
+        for index, parent in ipairs(parents) do
+            table.insert(lines, "    {link=citizen/" .. parent.id .. "}" .. parent.name .. "{link=}")
+        end
+    end
+    return table.concat(lines, "\n")
+end
+
+local function showDetailForCitizen(detailView, citizen, citizens, showChildren)
+    detailView.hidden = false
+    detailView.citizen = citizen
+    detailView.text = detailForCitizen(citizen, citizens, showChildren)
+    detailView:redraw()
 end
 
 return function(colony, contentWidth, contentHeight)
@@ -132,15 +236,26 @@ local citizenList = UI.List.new{
 }
 box:add(citizenList)
 
-local detailView = UI.Box.new{
+local detailView = UI.Label.new{
     x=0, y=0, w=contentWidth, h=contentHeight,
-    bg=colors.orange,
-    hidden=true
+    bg=colors.white,
+    hidden=true,
 }
 box:add(detailView)
 
+detailView.onLink = function(self, link)
+    if link == "showChildren" then
+        showDetailForCitizen(self, detailView.citizen, colony.getCitizens(), true)
+    elseif link == "hideChildren" then
+        showDetailForCitizen(self, detailView.citizen, colony.getCitizens(), false)
+    elseif string.sub(link, 1, 8) == "citizen/" then
+        local id = tonumber(string.sub(link, 9))
+        showDetailForCitizen(self, id, colony.getCitizens(), false)
+    end
+end
+
 citizenList.onSelect = function(self, index, item)
-    showDetailForCitizen(detailView, item.citizen)
+    showDetailForCitizen(detailView, item.citizen, colony.getCitizens(), false)
 end
 
 box.onShow = function(self)
