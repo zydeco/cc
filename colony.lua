@@ -70,7 +70,7 @@ tabBar = UI.TabBar.new{x=0,y=1,w=ui.base.w,h=ui.base.h-1,bg=colors.black, tabs={
     {
         bg=colors.orange, fg=colors.black,
         key="B", name="Buildings",
-        content=notImplementedView("Buildings")
+        content=require("colony/buildings")(colony, contentWidth, contentHeight)
     },
     {
         bg=colors.pink, fg=colors.black,

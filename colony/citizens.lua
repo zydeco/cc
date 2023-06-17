@@ -84,10 +84,6 @@ local function dataField(name, value)
     return string.format("%-10s%s", name, value)
 end
 
-local function formatPos(pos)
-    return string.format("%d,%d,%d", pos.x, pos.y, pos.z)
-end
-
 local function formatHealth(citizen)
     return string.format("{%s}%.2g/%d", getRateColor(citizen.health / citizen.maxHealth), citizen.health, citizen.maxHealth)
 end

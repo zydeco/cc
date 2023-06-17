@@ -6,6 +6,10 @@ function notImplementedView(name)
     }
 end
 
+function formatPos(pos)
+    return string.format("%d,%d,%d", pos.x, pos.y, pos.z)
+end
+
 function formatTime()
     return string.format("d%dt%04.1f", os.day(), os.time())
 end
