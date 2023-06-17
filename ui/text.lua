@@ -11,7 +11,7 @@ local function stringTags(str, defaultTagName)
             return {[string.sub(tag, 1, equalsPos-1)]=string.sub(tag, equalsPos+1)}
         end
     end
-    for nonTag, tag in string.gfind(str .. "{end}", "([^{]-)({[%a=]+})") do
+    for nonTag, tag in string.gfind(str .. "{end}", "([^{]-)({[^}]+})") do
         if string.len(nonTag) > 0 then
             table.insert(parts, nonTag)
         end
