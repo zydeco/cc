@@ -83,7 +83,7 @@ ui:add(UI.List.new{
 })
 
 ui:add(UI.Label.new{
-    x=1, y=12, w=24, h=6,
+    x=1, y=12, w=24, h=5,
     bg=colors.lightGray,
     text="Multi{purple}line\n" ..
         "label {blue}with {bg=white}{green}c{orange}o{red}l{yellow}o{black}u{lightBlue}r{brown}s{gray}!\n" ..
@@ -91,4 +91,19 @@ ui:add(UI.Label.new{
         "alignment\n" ..
         "{align=right}on different lines"
 })
+
+ui:add(UI.Checkbox.new{
+    x=2, y=17, w=10, text="A Checkbox!"
+})
+
+ui:add(UI.RadioButton.new{
+    x=2, y=18, w=8, text="One", group="x", value=1, checked=true
+})
+ui:add(UI.RadioButton.new{
+    x=10, y=18, w=8, text="Two", group="x", value=2
+})
+ui:add(UI.RadioButton.new{
+    x=18, y=18, w=8, text="Tres", group="x", value=3
+})
+
 ui:run()
