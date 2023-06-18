@@ -11,6 +11,8 @@
         "components/list.lua",
         "components/tabbar.lua",
         "components/field.lua",
+        "components/checkbox.lua",
+        "components/radiobutton.lua",
         "text.lua",
     },
 }
