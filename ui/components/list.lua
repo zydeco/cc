@@ -71,7 +71,7 @@ function List:draw(term, dx, dy)
         end
         self.ui:drawStyledText(term, text, bg, fg, contentWidth, UI.LEFT)
         if needBar then
-            local bar = "|"
+            local bar = "\x7f"
             local barSize = self.h - 2
             local scrollPos = 1
             if self.scrollIndex >= self.maxScroll then
@@ -80,11 +80,11 @@ function List:draw(term, dx, dy)
                 scrollPos = 1 + math.floor((self.scrollIndex / self.maxScroll) * barSize)
             end
             if y == 0 then
-                bar = "^"
+                bar = "\x1e"
             elseif y == self.h-1 then
-                bar = "v"
+                bar = "\x1f"
             elseif y == scrollPos then
-                bar = "#"
+                bar = "\x08"
             end
 
             term.setTextColor(self.fg)
