@@ -7,6 +7,7 @@
         "overview.lua",
         "utils.lua",
         "citizens.lua",
+        "buildings.lua",
         "stubs/save.lua"
     },
 }
