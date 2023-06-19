@@ -23,7 +23,9 @@ local function citizenRow(citizen, width)
     local stateIcon = " "
     local lowHealth = citizen.health and citizen.maxHealth and citizen.health < (citizen.maxHealth * 0.1)
     if lowHealth then
-        warnIcon = "{red}!"
+        warnIcon = "{red}\x03"
+    elseif citizen.homeless then
+        warnIcon = "{red}h"
     elseif citizen.betterFood then
         warnIcon = "{red}f"
     end
