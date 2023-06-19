@@ -38,7 +38,7 @@ ui:add(field)
 
 local btn = UI.Button.new{
     text="{green}By{fg}e{red}!", bg=colors.orange, fg=colors.black, align=UI.CENTER,
-    x=15, y=5, w=10, h=3,
+    x=15, y=4, w=10, h=3,
     action=function(self)
         ui:stop()
     end}
@@ -50,6 +50,28 @@ btn:add(
         text="for now", bg=colors.red, fg=colors.black
     }
 )
+
+local menu = UI.Menu.new{
+    x=15, y=8, w=10, text="Menu",
+    items = {
+        { text="New" },
+        { text="Old" },
+        { text="{red}Red", marked=true, },
+        { text="{lightBlue}Choose me!", marked=false },
+        { },
+        { text="Quit", onSelect = function()
+            ui:stop()
+        end}
+    },
+    onSelect = function(self, index, item)
+        label.text = item.text
+        label.dirty = true
+        if item.marked ~= nil then
+            item.marked = not item.marked
+        end
+    end
+}
+ui:add(menu)
 
 ui:add(UI.List.new{
     x=4, y=4, w=10, h=7,

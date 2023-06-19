@@ -81,6 +81,9 @@ local function handleEvent(ui)
         if event ~= "mouse_scroll" then
             ui.keyHandler = nil
         end
+        if event == "mouse_click" and ui._menu and hit ~= ui._menu then
+            ui:hideMenu()
+        end
         if hit then
             -- onEVENT(self, x, y, ...)
             if event == "mouse_click" and hit.onMouseDown then
@@ -142,7 +145,7 @@ function UI:run()
     term.setTextColor(colors.black)
     term.clear()
     while ui.running do
-        drawViews(ui, ui.base.subviews, 1, 1)
+        drawViews(ui, {ui.base}, 0, 0)
         showDebugMsg(ui)
         handleField(ui)
         handleEvent(ui)
@@ -191,4 +194,16 @@ end
 
 function UI:stop()
     self.running = false
+end
+
+function UI:showMenu(menu)
+    self.base:add(menu)
+    self._menu=menu
+end
+
+function UI:hideMenu()
+    if self._menu then
+        self._menu:removeFromSuperview()
+        self._menu = nil
+    end
 end

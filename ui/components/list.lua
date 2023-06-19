@@ -118,12 +118,18 @@ function List:onMouseDown(x, y, button)
         -- select item
         self:redraw()
         local index = self.scrollIndex + math.floor(y / self.rowHeight)
+        local item = nil
         if index <= #self.items then
+            item = self.items[index]
             self.selected = index
         else
             self.selected = nil
         end
-        self:onSelect(self.selected, self.items[self.selected])
+        if item.selectable == false then
+            self.selected = nil
+            item = nil
+        end
+        self:onSelect(self.selected, item)
     end
 end
 

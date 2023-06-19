@@ -28,12 +28,13 @@ function Box:add(subview)
     if subview.parent == self then
         return
     elseif subview.parent then
-        subview.removeFromSuperview()
+        subview:removeFromSuperview()
     end
     table.insert(self.subviews, subview)
     subview.parent = self
-    forEachSubview(subview, function(view)
+    forEachSubview(self, function(view)
         view.ui = self.ui
+        view.dirty = true
     end)
 end
 
@@ -56,10 +57,12 @@ function Box:remove(subview)
     end
     for i=#self.subviews,1,-1 do
         if self.subviews[i] == subview then
-            self.dirty=true
             table.remove(self.subviews, i)
         end
     end
+    forEachSubview(self, function (view)
+        view.dirty=true
+    end)
 end
 
 function Box:removeFromSuperview()

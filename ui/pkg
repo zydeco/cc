@@ -13,6 +13,8 @@
         "components/field.lua",
         "components/checkbox.lua",
         "components/radiobutton.lua",
+        "components/menu.lua",
         "text.lua",
+        "utils.lua",
     },
 }
