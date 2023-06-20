@@ -72,3 +72,14 @@ function countTrueValues(list, key)
         return x[key]
     end)
 end
+
+function distanceSquared(pos1, pos2)
+    local dx = pos1.x - pos2.x
+    local dy = pos1.y - pos2.y
+    local dz = pos1.z - pos2.z
+    return (dx * dx) + (dy * dy) + (dz * dz)
+end
+
+function distance(pos1, pos2)
+    return math.sqrt(distanceSquared(pos1, pos2))
+end

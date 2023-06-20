@@ -143,7 +143,7 @@ local function detailForCitizen(citizenId, citizens, showChildren)
     end
 
     if citizen.homeless then 
-        table.insert(lines, "  {red}homeless")
+        table.insert(lines, dataField("  Home", "{red}none"))
     else
         local home = citizen.home
         table.insert(lines, dataField("  Home", formatBuilding(home)))
@@ -151,11 +151,23 @@ local function detailForCitizen(citizenId, citizens, showChildren)
     end
 
     if citizen.work == nil then
-        table.insert(lines, "  {red}unemployed")
+        table.insert(lines, dataField("  Job", "{red}none"))
     elseif not worksFromHome(citizen) then
         local work = citizen.work
         table.insert(lines, dataField("  Job", formatBuilding(work)))
         table.insert(lines, dataField("", formatPos(work.location)))
+        if not citizen.homeless then
+            local commute = distance(citizen.home.location, work.location)
+            local commuteGrade = "green"
+            if commute > 160 then
+                commuteGrade = "red"
+            elseif commute > 100 then
+                commuteGrade = "orange"
+            elseif commute < 50 then
+                commuteGrade = "blue"
+            end
+            table.insert(lines, dataField("", string.format("{%s}%db from home", commuteGrade, commute)))
+        end
     end
 
     if citizen.armor > 0 then
