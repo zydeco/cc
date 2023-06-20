@@ -3,14 +3,7 @@ c=ci.getCitizens()
 v=ci.getVisitors()
 b=ci.getBuildings()
 w=ci.getWorkOrders()
---r=ci.getResearch()
 r=ci.getRequests()
-
-funs=""
-for k,v in pairs(ci) do
-  funs = funs .. "\n" .. k
-end
---textutils.pagedPrint(funs)
 
 function serialize(value)
   local ok,str = pcall(function()
@@ -20,8 +13,14 @@ function serialize(value)
     return str
   end
   str = "{\n"
-  for i=1,#value do
-    str = str .. serialize(value[i]) .. ",\n" 
+  if #value > 0 then
+    for i=1,#value do
+      str = str .. serialize(value[i]) .. ",\n" 
+    end
+  else
+    for k, v in pairs(value) do
+      str = str .. "[" .. serialize(k) .. "] = " .. serialize(v) .. ",\n"
+    end
   end
   str = str .. "}"
   return str
@@ -66,6 +65,9 @@ wf(f, "getVisitors", v)
 wf(f, "getBuildings", b)
 wf(f, "getWorkOrders", w)
 wf(f, "getRequests", r)
+if ci.getResearch then
+  wf(f, "getResearch", ci.getResearch())
+end
 
 wor={}
 br={}
