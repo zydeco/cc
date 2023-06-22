@@ -83,3 +83,36 @@ end
 function distance(pos1, pos2)
     return math.sqrt(distanceSquared(pos1, pos2))
 end
+
+local STRINGS=require("colony/strings")
+function translate(key)
+    if key == nil then
+        return "{bg=red}{white}nil{bg=bg}{fg}"
+    end
+    local translated = STRINGS[key]
+    if translated == nil then
+        translated = "{bg=red}{white}" .. key .. "{bg=bg}{fg}"
+    end
+    return translated
+end
+
+function formatWithLevel(name, level, width)
+    if string.len(name) > width - 2 then
+        if string.sub(name, width-1, width-1) == " " then
+            return string.sub(name, 1, width-1) .. level
+        end
+        name = string.sub(name, 1, width - 2)
+        if string.sub(name, -1) == " " then
+            return name .. level
+        elseif string.sub(name, -2, -2) == " " then
+            return string.sub(name, 1, width - 3) .. level
+        else
+            return string.sub(name, 1, width - 3)  .. ". " .. level
+        end
+    end
+    return name .. " " .. level
+end
+
+function formatBuilding(building, width)
+    return formatWithLevel(translate(building.name or ("com.minecolonies.building." .. building.type)), building.level, width)
+end

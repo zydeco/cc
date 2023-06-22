@@ -14,6 +14,11 @@ local function formatHappiness(value, format)
     return string.format("{%s}%" .. format, getRateColor(value / 10.0), value)
 end
 
+
+local function formatWork(work, width)
+    return formatWithLevel(translate(work.job or work.name), work.level, width)
+end
+
 local function citizenRow(citizen, width)
     local statusSize = 3
     local name = string.sub(citizen.name, 1, width - statusSize)
@@ -44,8 +49,8 @@ local function citizenRow(citizen, width)
         ageIcon = "{gray}" .. citizen.age
     end
     if citizen.work then
-        local job = citizen.work.type
-        line2 = " " .. job .. " " .. citizen.work.level .. string.rep(" ", width - 3 - string.len(job) - UI.strlen(ageIcon)) .. ageIcon
+        local job = formatWork(citizen.work, width - 2 - UI.strlen(ageIcon))
+        line2 = " " .. job .. string.rep(" ", width - 1 - string.len(job) - UI.strlen(ageIcon)) .. ageIcon
     else
         line2 = " {red}unemployed" .. string.rep(" ", width - 11 - UI.strlen(ageIcon)) .. ageIcon
     end
@@ -57,7 +62,7 @@ end
 
 local function shouldShowCitizen(citizen, filterText)
     return string.find(string.lower(citizen.name), filterText) ~= nil or
-    (citizen.work ~= nil and string.find(string.lower(citizen.work.type), filterText) == 1)
+    (citizen.work ~= nil and string.find(string.lower(translate(citizen.work.job or citizen.work.name)), filterText) == 1)
 end
 
 local function reloadCitizens(colony, filterField, countLabel, citizenList)
@@ -88,10 +93,6 @@ end
 
 local function formatHealth(citizen)
     return string.format("{%s}%.2g/%d", getRateColor(citizen.health / citizen.maxHealth), citizen.health, citizen.maxHealth)
-end
-
-local function formatBuilding(building)
-    return building.type .. " " .. building.level
 end
 
 local function worksFromHome(citizen)
@@ -144,17 +145,17 @@ local function detailForCitizen(citizenId, citizens, showChildren)
 
     if citizen.homeless then 
         table.insert(lines, dataField("  Home", "{red}none"))
-    else
+    elseif not worksFromHome(citizen) then
         local home = citizen.home
-        table.insert(lines, dataField("  Home", formatBuilding(home)))
+        table.insert(lines, dataField("  Home", formatBuilding(home, 16)))
         table.insert(lines, dataField("", formatPos(home.location)))
     end
 
     if citizen.work == nil then
         table.insert(lines, dataField("  Job", "{red}none"))
-    elseif not worksFromHome(citizen) then
+    else
         local work = citizen.work
-        table.insert(lines, dataField("  Job", formatBuilding(work)))
+        table.insert(lines, dataField("  Job", formatWork(work, 16)))
         table.insert(lines, dataField("", formatPos(work.location)))
         if not citizen.homeless then
             local commute = distance(citizen.home.location, work.location)
