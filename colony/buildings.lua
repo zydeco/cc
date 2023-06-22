@@ -3,6 +3,26 @@ local function canHasCitizens(buildingType)
     return buildingType ~= "townhall"
 end
 
+local function maxCitizens(building)
+    local type = building.type
+    if not building.built then
+        -- unbuilt buildings can't have citizens
+        return 0
+    elseif type == "townhall" or type == "barracks" or type == "mysticalsite" then
+        -- uninhabited
+        return 0
+    elseif type == "residence" or type == "barrackstower" then
+        -- # of residents
+        return building.level
+    elseif building.type == "tavern" then
+        -- max 4 residents
+        return 4
+    else
+        -- one worker
+        return 1
+    end
+end
+
 local function isResidence(buildingType)
     return buildingType == "residence" or buildingType == "tavern"
 end
@@ -31,10 +51,12 @@ local function buildingRow(building, width)
     local line1 = name .. string.rep(" ", padSize) .. status
     local pos = formatPos(building.location)
     local citizens = "" .. #building.citizens
-    if #building.citizens == 0 and canHasCitizens(building.type) then
+    if #building.citizens < maxCitizens(building) then
         citizens = "{red}" .. citizens
+    elseif #building.citizens == 0 then
+        citizens = ""
     end
-    local line2 = "  " .. pos .. string.rep(" ", width - 3 - string.len(pos) - UI.strlen(citizens)) .. citizens
+    local line2 = " " .. pos .. string.rep(" ", width - 2 - string.len(pos) - UI.strlen(citizens)) .. citizens
     return {
         text=line1 .. "\n" .. line2,
         building=building
