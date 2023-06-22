@@ -9,7 +9,7 @@ end
 
 local function buildingRow(building, width)
     local statusSize = 3
-    local name = building.type .. " " .. building.level
+    local name = formatBuilding(building, width - (1 + statusSize))
     local padSize = width - string.len(name) - statusSize
     -- status = guarded + built + workingOn
     local status = ""
@@ -42,7 +42,7 @@ local function buildingRow(building, width)
 end
 
 local function shouldShowBuilding(building, filterText)
-    return string.find(string.lower(building.type), filterText) ~= nil
+    return string.find(string.lower(translate(building.name)), filterText) ~= nil
 end
 
 local function reloadBuildings(colony, filterField, countLabel, buildingList)
@@ -71,7 +71,7 @@ end
 local function detailForBuilding(building)
     local lines = {
         " ",
-        "{align=center}" .. building.type .. " " .. building.level,
+        "{align=center}" .. translate(building.name) .. " " .. building.level,
         "{align=center}{gray}" .. building.style,
         "{align=center}{gray}" .. formatPos(building.location),
     }
