@@ -6,6 +6,7 @@
         "../colony.lua",
         "overview.lua",
         "utils.lua",
+        "strings.lua",
         "citizens.lua",
         "buildings.lua",
         "stubs/save.lua"
