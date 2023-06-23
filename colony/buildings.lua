@@ -11,10 +11,22 @@ local function maxCitizens(building)
     elseif type == "townhall" or type == "barracks" or type == "mysticalsite" then
         -- uninhabited
         return 0
-    elseif type == "residence" or type == "barrackstower" then
-        -- # of residents
+    elseif type == "residence" or type == "barrackstower" or type == "university" or type == "combatacademy" or type == "archery" then
+        -- # of residents/researchers
         return building.level
-    elseif building.type == "tavern" then
+    elseif type == "cook" then
+        -- ass cook at lvl 3
+        if building.level >= 3 then
+            return 2
+        else
+            return 1
+        end
+    elseif type == "school" then
+        -- teacher + students
+        return 1 + (building.level * 2)
+    elseif type == "library" or type == "warehouse" then
+        return building.level * 2
+    elseif type == "tavern" then
         -- max 4 residents
         return 4
     else
