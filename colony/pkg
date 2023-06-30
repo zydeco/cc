@@ -9,6 +9,7 @@
         "strings.lua",
         "citizens.lua",
         "buildings.lua",
+        "jobs.lua",
         "stubs/save.lua"
     },
 }

@@ -51,6 +51,54 @@ function flatMap(list, mapper)
     return mappedList
 end
 
+function table.keys(t)
+    local keyset={}
+    for k,v in pairs(t) do
+      keyset[1+#keyset]=k
+    end
+    return keyset
+end
+
+function table.shallowCopy(t)
+    local copy={}
+    for k,v in pairs(t) do
+        copy[k] = v
+    end
+    return copy
+end
+
+function table.flatten(t)
+    local flattened={}
+    for i,v in ipairs(t) do
+        if type(v) == "table" then
+            for j,w in ipairs(table.flatten(v)) do
+               table.insert(flattened, w)
+            end
+        else
+           table.insert(flattened, v)
+        end
+    end
+    return flattened
+end
+
+function table.rep(value, number)
+    local result={}
+    while #result < number do
+        table.insert(result, value)
+    end
+    return result
+end
+
+function table.removeOneValue(list, value)
+    for i = 1, #list do
+        if list[i] == value then
+            table.remove(list, i)
+            return true
+        end
+    end
+    return false
+end
+
 function countMatching(list, matcher)
     local n = 0
     for i=1,#list do

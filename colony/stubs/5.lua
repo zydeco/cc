@@ -89,6 +89,7 @@ COLONY_STUB = {
           level = 3,
           name = "com.minecolonies.building.hospital",
           type = "hospital",
+          job = "com.minecolonies.job.healer",
         },
         skills = {
           Athletics = {
@@ -183,6 +184,7 @@ COLONY_STUB = {
           level = 3,
           name = "com.minecolonies.building.composter",
           type = "composter",
+          job = "com.minecolonies.job.composter",
         },
         skills = {
           Athletics = {
@@ -275,6 +277,7 @@ COLONY_STUB = {
           level = 4,
           name = "com.minecolonies.building.miner",
           type = "miner",
+          job = "com.minecolonies.job.miner",
         },
         skills = {
           Athletics = {
@@ -367,6 +370,7 @@ COLONY_STUB = {
           level = 3,
           name = "com.minecolonies.building.guardtower",
           type = "guardtower",
+          job = "com.minecolonies.job.knight",
         },
         skills = {
           Athletics = {
@@ -461,6 +465,7 @@ COLONY_STUB = {
           level = 3,
           name = "com.minecolonies.building.university",
           type = "university",
+          job = "com.minecolonies.job.researcher",
         },
         skills = {
           Athletics = {
@@ -555,6 +560,7 @@ COLONY_STUB = {
           level = 3,
           name = "com.minecolonies.building.lumberjack",
           type = "lumberjack",
+          job = "com.minecolonies.job.lumberjack",
         },
         skills = {
           Athletics = {
@@ -647,6 +653,7 @@ COLONY_STUB = {
           level = 3,
           name = "com.minecolonies.building.guardtower",
           type = "guardtower",
+          job = "com.minecolonies.job.knight",
         },
         skills = {
           Athletics = {
@@ -739,6 +746,7 @@ COLONY_STUB = {
           level = 2,
           name = "com.minecolonies.building.cowboy",
           type = "cowboy",
+          job = "com.minecolonies.job.cowboy",
         },
         skills = {
           Athletics = {
@@ -833,6 +841,7 @@ COLONY_STUB = {
           level = 4,
           name = "com.minecolonies.building.builder",
           type = "builder",
+          job = "com.minecolonies.job.builder",
         },
         skills = {
           Athletics = {
@@ -925,6 +934,7 @@ COLONY_STUB = {
           level = 4,
           name = "com.minecolonies.building.builder",
           type = "builder",
+          job = "com.minecolonies.job.builder",
         },
         skills = {
           Athletics = {
@@ -1017,6 +1027,7 @@ COLONY_STUB = {
           level = 3,
           name = "com.minecolonies.building.deliveryman",
           type = "deliveryman",
+          job = "com.minecolonies.job.deliveryman",
         },
         skills = {
           Athletics = {
@@ -1109,6 +1120,7 @@ COLONY_STUB = {
           level = 2,
           name = "com.minecolonies.building.chickenherder",
           type = "chickenherder",
+          job = "com.minecolonies.job.chickenherder",
         },
         skills = {
           Athletics = {
@@ -1201,6 +1213,7 @@ COLONY_STUB = {
           level = 1,
           name = "com.minecolonies.building.guardtower",
           type = "guardtower",
+          job = "com.minecolonies.job.ranger",
         },
         skills = {
           Athletics = {
@@ -1293,6 +1306,7 @@ COLONY_STUB = {
           level = 3,
           name = "com.minecolonies.building.farmer",
           type = "farmer",
+          job = "com.minecolonies.job.farmer",
         },
         skills = {
           Athletics = {
@@ -1385,6 +1399,7 @@ COLONY_STUB = {
           level = 3,
           name = "com.minecolonies.building.cook",
           type = "cook",
+          job = "com.minecolonies.job.cookassistant",
         },
         skills = {
           Athletics = {
@@ -1479,6 +1494,7 @@ COLONY_STUB = {
           level = 2,
           name = "com.minecolonies.building.shepherd",
           type = "shepherd",
+          job = "com.minecolonies.job.shepherd",
         },
         skills = {
           Athletics = {
@@ -1571,6 +1587,7 @@ COLONY_STUB = {
           level = 3,
           name = "com.minecolonies.building.cook",
           type = "cook",
+          job = "com.minecolonies.job.cook",
         },
         skills = {
           Athletics = {
@@ -1663,6 +1680,7 @@ COLONY_STUB = {
           level = 3,
           name = "com.minecolonies.building.university",
           type = "university",
+          job = "com.minecolonies.job.researcher",
         },
         skills = {
           Athletics = {
@@ -1755,6 +1773,7 @@ COLONY_STUB = {
           level = 2,
           name = "com.minecolonies.building.glassblower",
           type = "glassblower",
+          job = "com.minecolonies.job.glassblower",
         },
         skills = {
           Athletics = {
@@ -1847,6 +1866,7 @@ COLONY_STUB = {
           level = 3,
           name = "com.minecolonies.building.deliveryman",
           type = "deliveryman",
+          job = "com.minecolonies.job.deliveryman",
         },
         skills = {
           Athletics = {
@@ -1939,6 +1959,7 @@ COLONY_STUB = {
           level = 3,
           name = "com.minecolonies.building.sawmill",
           type = "sawmill",
+          job = "com.minecolonies.job.sawmill",
         },
         skills = {
           Athletics = {
@@ -2031,6 +2052,7 @@ COLONY_STUB = {
           level = 3,
           name = "com.minecolonies.building.plantation",
           type = "plantation",
+          job = "com.minecolonies.job.planter",
         },
         skills = {
           Athletics = {
@@ -2123,6 +2145,7 @@ COLONY_STUB = {
           level = 3,
           name = "com.minecolonies.building.fisherman",
           type = "fisherman",
+          job = "com.minecolonies.job.fisherman",
         },
         skills = {
           Athletics = {
@@ -2215,6 +2238,7 @@ COLONY_STUB = {
           level = 3,
           name = "com.minecolonies.building.university",
           type = "university",
+          job = "com.minecolonies.job.researcher",
         },
         skills = {
           Athletics = {
@@ -2307,6 +2331,7 @@ COLONY_STUB = {
           level = 2,
           name = "com.minecolonies.building.guardtower",
           type = "guardtower",
+          job = "com.minecolonies.job.ranger",
         },
         skills = {
           Athletics = {
@@ -2399,6 +2424,7 @@ COLONY_STUB = {
           level = 2,
           name = "com.minecolonies.building.barrackstower",
           type = "barrackstower",
+          job = "com.minecolonies.job.knight",
         },
         skills = {
           Athletics = {
@@ -2493,6 +2519,7 @@ COLONY_STUB = {
           level = 3,
           name = "com.minecolonies.building.beekeeper",
           type = "beekeeper",
+          job = "com.minecolonies.job.beekeeper",
         },
         skills = {
           Athletics = {
@@ -2587,6 +2614,7 @@ COLONY_STUB = {
           level = 3,
           name = "com.minecolonies.building.builder",
           type = "builder",
+          job = "com.minecolonies.job.builder",
         },
         skills = {
           Athletics = {
@@ -2681,6 +2709,7 @@ COLONY_STUB = {
           level = 3,
           name = "com.minecolonies.building.stonemason",
           type = "stonemason",
+          job = "com.minecolonies.job.stonemason",
         },
         skills = {
           Athletics = {
@@ -2773,6 +2802,7 @@ COLONY_STUB = {
           level = 3,
           name = "com.minecolonies.building.blacksmith",
           type = "blacksmith",
+          job = "com.minecolonies.job.blacksmith",
         },
         skills = {
           Athletics = {
@@ -2865,6 +2895,7 @@ COLONY_STUB = {
           level = 3,
           name = "com.minecolonies.building.crusher",
           type = "crusher",
+          job = "com.minecolonies.job.crusher",
         },
         skills = {
           Athletics = {
@@ -2957,6 +2988,7 @@ COLONY_STUB = {
           level = 3,
           name = "com.minecolonies.building.deliveryman",
           type = "deliveryman",
+          job = "com.minecolonies.job.deliveryman",
         },
         skills = {
           Athletics = {
@@ -3049,6 +3081,7 @@ COLONY_STUB = {
           level = 2,
           name = "com.minecolonies.building.fletcher",
           type = "fletcher",
+          job = "com.minecolonies.job.fletcher",
         },
         skills = {
           Athletics = {
@@ -3141,6 +3174,7 @@ COLONY_STUB = {
           level = 3,
           name = "com.minecolonies.building.stonesmeltery",
           type = "stonesmeltery",
+          job = "com.minecolonies.job.stonesmeltery",
         },
         skills = {
           Athletics = {
@@ -3233,6 +3267,7 @@ COLONY_STUB = {
           level = 3,
           name = "com.minecolonies.building.school",
           type = "school",
+          job = "com.minecolonies.job.teacher",
         },
         skills = {
           Athletics = {
@@ -3325,6 +3360,7 @@ COLONY_STUB = {
           level = 3,
           name = "com.minecolonies.building.mechanic",
           type = "mechanic",
+          job = "com.minecolonies.job.mechanic",
         },
         skills = {
           Athletics = {
@@ -3417,6 +3453,7 @@ COLONY_STUB = {
           level = 3,
           name = "com.minecolonies.building.library",
           type = "library",
+          job = "com.minecolonies.job.student",
         },
         skills = {
           Athletics = {
