@@ -169,7 +169,9 @@ local function detailForCitizen(citizenId, citizens, showChildren)
             elseif commute < 50 then
                 commuteGrade = "blue"
             end
-            table.insert(lines, dataField("", string.format("{%s}%db from home", commuteGrade, commute)))
+            if math.floor(commute) > 0 then
+                table.insert(lines, dataField("", string.format("{%s}%db from home", commuteGrade, commute)))
+            end
         end
     end
 
