@@ -134,7 +134,8 @@ local function detailForCitizen(citizenId, citizens, showChildren)
     local lines = {
         "{align=center}" .. citizen.name,
         "{align=center}{gray}" .. citizen.age .. " " .. citizen.gender,
-        "{align=center}{gray}" .. citizen.state .. " " .. formatPos(citizen.location),
+        "{align=center}{gray}" .. citizen.state,
+        "{align=center}{gray}" .. formatPos(citizen.location),
         dataField("  Happy", formatHappiness(citizen.happiness, ".2f")),
         dataField("  Health", formatHealth(citizen))
     }
@@ -156,6 +157,7 @@ local function detailForCitizen(citizenId, citizens, showChildren)
     else
         local work = citizen.work
         table.insert(lines, dataField("  Job", formatWork(work, 16)))
+        table.insert(lines, dataField("", translate(work.name)))
         table.insert(lines, dataField("", formatPos(work.location)))
         if not citizen.homeless then
             local commute = distance(citizen.home.location, work.location)
