@@ -1,8 +1,3 @@
-local function canHasCitizens(buildingType)
-    -- town hall can't employ/house anyone, so it's ok to have 0 citizens
-    return buildingType ~= "townhall"
-end
-
 local function maxCitizens(building)
     local type = building.type
     if not building.built then
@@ -125,7 +120,7 @@ local function detailForBuilding(building)
     table.insert(lines, " ")
 
     table.insert(lines, "  Storage: " .. building.storageBlocks .. "b (" .. building.storageSlots .. ")")
-    if building.built and #building.citizens == 0 and canHasCitizens(building.type) then
+    if building.built and #building.citizens == 0 and maxCitizens(building) > 0 then
         if isResidence(building.type) then
             table.insert(lines, "  {align=center}{red}no residents")
         else
