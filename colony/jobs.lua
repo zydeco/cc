@@ -193,7 +193,7 @@ function jobsForBuildings(buildings, includeTraining)
 end
 
 -- sort jobs according to skills
-function sortJobs(skills, jobs, minScore)
+function sortJobs(skills, jobs, minScore, includeScore)
     local sortedJobs = {}
     local scores = {}
     minScore = minScore or 0
@@ -207,6 +207,11 @@ function sortJobs(skills, jobs, minScore)
     table.sort(sortedJobs, function(a,b)
         return scores[a] > scores[b]
     end)
+    if includeScore then
+        return map(sortedJobs, function(job)
+            return {scores[job], job}
+        end)
+    end
     return sortedJobs
 end
 
@@ -267,11 +272,35 @@ local function assignCitizensToJobs(citizens, jobs)
 end
 
 function assignJobs(citizens, jobs, jobsArePrioritised)
-    jobs = jobs or adultJobs()
+    jobs = jobs or ADULT_JOBS
     local adults = filter(citizens, function(citizen) return citizen.age == "adult" end)
     if #adults > #jobs or jobsArePrioritised then
-        return assignJobsToCitizens(adults, jobs or adultJobs())
+        return assignJobsToCitizens(adults, jobs)
     else
-        return assignCitizensToJobs(adults, jobs or adultJobs)
+        return assignCitizensToJobs(adults, jobs)
     end
+end
+
+function hasBestJob(citizen)
+    local job = citizen.work.job
+    if citizen.work == nil then
+        return false
+    end
+    if citizen.age == "child" then
+        return job == "com.minecolonies.job.pupil"
+    end
+    local bestJobs = sortJobs(citizen.skills, FINAL_JOBS, nil, true)
+    if #bestJobs == 0 then
+        return false
+    end
+    local bestJobScore = bestJobs[1][1]
+    bestJobs = filter(bestJobs, function(thisJob)
+        return thisJob[1] == bestJobScore
+    end)
+    for index, value in ipairs(bestJobs) do
+        if value[2] == job then
+            return true
+        end
+    end
+    return false
 end

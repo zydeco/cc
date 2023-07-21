@@ -1,3 +1,5 @@
+require("colony/jobs")
+
 local function getRateColor(rate)
     if rate < 0.4 then
         return "red"
@@ -50,7 +52,11 @@ local function citizenRow(citizen, width)
     end
     if citizen.work then
         local job = formatWork(citizen.work, width - 2 - UI.strlen(ageIcon))
-        line2 = " " .. job .. string.rep(" ", width - 1 - string.len(job) - UI.strlen(ageIcon)) .. ageIcon
+        local jobPrefix = " "
+        if hasBestJob(citizen) then
+            jobPrefix = "+"
+        end
+        line2 = jobPrefix .. job .. string.rep(" ", width - 1 - string.len(job) - UI.strlen(ageIcon)) .. ageIcon
     else
         line2 = " {red}unemployed" .. string.rep(" ", width - 11 - UI.strlen(ageIcon)) .. ageIcon
     end
