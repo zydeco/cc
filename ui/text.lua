@@ -124,20 +124,23 @@ function UI:drawStyledText(term, str, bg, fg, width, align)
     term.setBackgroundColor(bg)
     local items = stringTags(str, UI_TEXT_DEFAULT_TAG)
     local length = styledLength(items)
+    local pad = nil
     -- first item can override alignment
     if type(items[1]) == "table" and items[1].align then
         align = UI[string.upper(items[1].align)] or align
     end
     if length > width then
         trimStyledText(items, length - width, align)
-    elseif length < width and align ~= UI.LEFT then
-        local x,y = term.getCursorPos()
+    elseif length < width then
         if align == UI.RIGHT then
-            x = x + (width - length)
+            term.write(string.rep(" ", width - length))
         elseif align == UI.CENTER then
-            x = x + math.floor((width - length) / 2)
+            local padSize = math.floor((width - length) / 2)
+            term.write(string.rep(" ", padSize))
+            pad = string.rep(" ", math.ceil((width - length) / 2))
+        elseif align == UI.LEFT then
+            pad = string.rep(" ", width - length)
         end
-        term.setCursorPos(x, y)
     end
     for i=1,#items do
         local item = items[i]
@@ -146,6 +149,9 @@ function UI:drawStyledText(term, str, bg, fg, width, align)
         elseif type(item) == "table" then
             setTermStyle(term, item, bg, fg)
         end
+    end
+    if pad ~= nil then
+        term.write(pad)
     end
 end
 

@@ -24,13 +24,22 @@ function List.new(arg)
     return self
 end
 
+function textLinesForItem(item)
+    if type(item) == "string" then
+        return UI.textLines(item)
+    elseif type(item) == "table" then
+        return UI.textLines(item.text)
+    else
+        error("unexpected item type " .. type(item))
+    end
+end
+
 function List:draw(term, dx, dy)
     Box.draw(self, term, dx, dy)
     local items = self.items
     local rowHeight = self.rowHeight
     local contentHeight = #items * rowHeight
     local itemsPerPage = math.floor(self.h / rowHeight)
-    local pad = string.rep(" ", self.w)
     self.maxScroll = math.max(1, 1 + #items - itemsPerPage)
     if self.scrollIndex > self.maxScroll then
         self.scrollIndex = self.maxScroll
@@ -48,15 +57,8 @@ function List:draw(term, dx, dy)
     for y = 0, self.h-1 do
         local index = self.scrollIndex + math.floor(y / rowHeight)
         local item = self.items[index] or ""
-        local textLines = {}
-        if type(item) == "string" then
-            textLines = UI.textLines(item)
-        elseif type(item) == "table" then
-            textLines = UI.textLines(item.text)
-        else
-            error("unexpected item type " .. type(item))
-        end
-        local text = (textLines[1 + y % rowHeight] or "") .. pad
+        local textLines = textLinesForItem(item)
+        local text = (textLines[1 + y % rowHeight] or "") -- .. pad
         term.setCursorPos(self.x + dx, self.y + dy + y)
         if index == self.selected then
             fg = self.fgSelected
@@ -130,6 +132,19 @@ function List:onMouseDown(x, y, button)
             item = nil
         end
         self:onSelect(self.selected, item)
+    elseif self.onLink then
+        -- links
+        local index = self.scrollIndex + math.floor(y / self.rowHeight)
+        if index > #self.items then return end
+        self.ui.msg = "onLink " .. index
+        local item = self.items[index]
+        local textLines = textLinesForItem(item)
+        local line = textLines[1 + (y % self.rowHeight)]
+        if line == nil then return end
+        local tagValue = UI.textTagAt(line, self.w, self.align, "link", x)
+        if tagValue and tagValue ~= "" then
+            self:onLink(tagValue)
+        end
     end
 end
 
