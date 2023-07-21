@@ -190,13 +190,13 @@ local function detailForCitizen(citizenId, citizens, showChildren)
 
     if #citizen.children > 0 then
         if showChildren then
-            table.insert(lines, dataField("  Children", "{link=hideChildren}" .. #citizen.children .. "{link=}"))
+            table.insert(lines, dataField("  Children", "{link=hideChildren}" .. #citizen.children .. " \x1f{link=}"))
             for index, child in ipairs(citizen.children) do
                 local childName = citizenName(citizens, child)
-                table.insert(lines, "    {link=citizen/" .. child .. "}" .. childName .. "{link=}")
+                table.insert(lines, "   {link=citizen/" .. child .. "}\xbb" .. childName .. "{link=}")
             end
         else
-            table.insert(lines, dataField("  Children", "{link=showChildren}" .. #citizen.children .. "{link=}"))
+            table.insert(lines, dataField("  Children", "{link=showChildren}" .. #citizen.children .. " \x10{link=}"))
         end
     end
 
@@ -204,16 +204,16 @@ local function detailForCitizen(citizenId, citizens, showChildren)
     if #parents > 0 then
         table.insert(lines, "  Parents:")
         for index, parent in ipairs(parents) do
-            table.insert(lines, "    {link=citizen/" .. parent.id .. "}" .. parent.name .. "{link=}")
+            table.insert(lines, "   {link=citizen/" .. parent.id .. "}\xbb" .. parent.name .. "{link=}")
         end
     end
-    return table.concat(lines, "\n")
+    return lines
 end
 
 local function showDetailForCitizen(detailView, citizen, citizens, showChildren)
     detailView.hidden = false
     detailView.citizen = citizen
-    detailView.text = detailForCitizen(citizen, citizens, showChildren)
+    detailView.items = detailForCitizen(citizen, citizens, showChildren)
     detailView:redraw()
 end
 
@@ -257,10 +257,11 @@ local citizenList = UI.List.new{
 }
 box:add(citizenList)
 
-local detailView = UI.Label.new{
+local detailView = UI.List.new{
     x=0, y=0, w=contentWidth, h=contentHeight,
     bg=colors.white,
     hidden=true,
+    items={}
 }
 box:add(detailView)
 
