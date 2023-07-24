@@ -281,7 +281,24 @@ function assignJobs(citizens, jobs, jobsArePrioritised)
     end
 end
 
-function hasBestJob(citizen)
+function bestJobs(citizen, jobs, count)
+    local sortedJobs = sortJobs(citizen.skills, jobs or FINAL_JOBS, nil, true)
+    if #sortedJobs == 0 then
+        return false
+    end
+    local bestJobScore = sortedJobs[1][1]
+    if count == nil then
+        -- only job with highest score
+        return filter(sortedJobs, function(job)
+            return job[1] == bestJobScore
+        end)
+    else
+        return { table.unpack(sortedJobs, 1, count) }
+    end
+    
+end
+
+function hasBestJob(citizen, jobs)
     local job = citizen.work.job
     if citizen.work == nil then
         return false
@@ -289,15 +306,8 @@ function hasBestJob(citizen)
     if citizen.age == "child" then
         return job == "com.minecolonies.job.pupil"
     end
-    local bestJobs = sortJobs(citizen.skills, FINAL_JOBS, nil, true)
-    if #bestJobs == 0 then
-        return false
-    end
-    local bestJobScore = bestJobs[1][1]
-    bestJobs = filter(bestJobs, function(thisJob)
-        return thisJob[1] == bestJobScore
-    end)
-    for index, value in ipairs(bestJobs) do
+    local topJobs = jobs or bestJobs(citizen)
+    for index, value in ipairs(topJobs) do
         if value[2] == job then
             return true
         end

@@ -136,7 +136,6 @@ function List:onMouseDown(x, y, button)
         -- links
         local index = self.scrollIndex + math.floor(y / self.rowHeight)
         if index > #self.items then return end
-        self.ui.msg = "onLink " .. index
         local item = self.items[index]
         local textLines = textLinesForItem(item)
         local line = textLines[1 + (y % self.rowHeight)]
