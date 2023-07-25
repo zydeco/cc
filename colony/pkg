@@ -10,6 +10,7 @@
         "citizens.lua",
         "buildings.lua",
         "jobs.lua",
+        "visitors.lua",
         "stubs/save.lua"
     },
 }

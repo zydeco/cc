@@ -1,16 +1,5 @@
 require("colony/jobs")
-
-local function getRateColor(rate)
-    if rate < 0.4 then
-        return "red"
-    elseif rate < 0.6 then
-        return "orange"
-    elseif rate < 0.9 then
-        return "green"
-    else
-        return "blue"
-    end
-end
+require("colony/utils")
 
 local function formatHappiness(value, format)
     return string.format("{%s}%" .. format, getRateColor(value / 10.0), value)
@@ -109,12 +98,7 @@ local function worksFromHome(citizen)
 end
 
 local function getCitizen(citizens, id)
-    for index, citizen in ipairs(citizens) do
-        if citizen.id == id then
-            return citizen
-        end
-    end
-    error("citizen " .. id .. " not found")
+    return getById(citizens, id)
 end
 
 local function citizenName(citizens, id)

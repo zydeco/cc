@@ -209,7 +209,10 @@ function sortJobs(skills, jobs, minScore, includeScore)
     end)
     if includeScore then
         return map(sortedJobs, function(job)
-            return {scores[job], job}
+            local skill1 = JOB_SKILLS[job][1]
+            if type(skill1) == "table" then skill1 = skill1[1] end
+            local skill2 = JOB_SKILLS[job][2]
+            return {scores[job], job, skills[skill1].level, skills[skill2].level}
         end)
     end
     return sortedJobs
@@ -284,7 +287,7 @@ end
 function bestJobs(citizen, jobs, count)
     local sortedJobs = sortJobs(citizen.skills, jobs or FINAL_JOBS, nil, true)
     if #sortedJobs == 0 then
-        return false
+        return {}
     end
     local bestJobScore = sortedJobs[1][1]
     if count == nil then

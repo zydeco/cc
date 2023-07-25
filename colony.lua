@@ -74,8 +74,8 @@ tabBar = UI.TabBar.new{x=0,y=1,w=ui.base.w,h=ui.base.h-1,bg=colors.black, tabs={
     },
     {
         bg=colors.pink, fg=colors.black,
-        key="R", name="Requests",
-        content=notImplementedView("Requests")
+        key="R", name="Research",
+        content=notImplementedView("Research")
     },
     {
         bg=colors.purple, fg=colors.black,
@@ -83,14 +83,14 @@ tabBar = UI.TabBar.new{x=0,y=1,w=ui.base.w,h=ui.base.h-1,bg=colors.black, tabs={
         content=notImplementedView("Work Orders")
     },
     {
-        bg=colors.cyan, fg=colors.black,
-        key="E", name="Employment",
-        content=notImplementedView("Employment")
+        bg=colors.green, fg=colors.black,
+        key="V", name="Visitors",
+        content=require("colony/visitors")(colony, contentWidth, contentHeight)
     },
     {
-        bg=colors.green, fg=colors.black,
-        key="H", name="Housing",
-        content=notImplementedView("Housing")
+        bg=colors.cyan, fg=colors.black,
+        key="P", name="Optimization",
+        content=notImplementedView("Optimization")
     },
     {
         bg=colors.yellow, fg=colors.black,

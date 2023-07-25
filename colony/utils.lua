@@ -134,6 +134,9 @@ end
 
 local STRINGS=require("colony/strings")
 function translate(key)
+    if type(key) ~= "string" then
+        return "{bg=red}{white}TABLE?{bg=bg}{fg}"
+    end
     if key == nil then
         return "{bg=red}{white}nil{bg=bg}{fg}"
     end
@@ -163,4 +166,25 @@ end
 
 function formatBuilding(building, width)
     return formatWithLevel(translate(building.name or ("com.minecolonies.building." .. building.type)), building.level, width)
+end
+
+function getRateColor(rate)
+    if rate < 0.4 then
+        return "red"
+    elseif rate < 0.6 then
+        return "orange"
+    elseif rate < 0.9 then
+        return "green"
+    else
+        return "blue"
+    end
+end
+
+function getById(list, id)
+    for index, item in ipairs(list) do
+        if item.id == id then
+            return item
+        end
+    end
+    error("item with id " .. id .. " not found in list")
 end
