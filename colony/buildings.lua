@@ -40,38 +40,67 @@ local function buildingRow(building, width)
     local padSize = width - string.len(name) - statusSize
     -- status = guarded + built + workingOn
     local status = ""
+    local workingFlag = ""
+    local guardedFlag = "#guarded"
+    local builtFlag = "#built"
+    if building.isWorkingOn then
+        status = status .. "{orange}W"
+        workingFlag = "#working"
+    else
+        status = status .. " "
+    end
     if building.guarded then
         status = status .. "{green}G"
     else
         status = status .. "{red}g"
+        guardedFlag = "#unguarded"
     end
     if building.built then
         status = status .. "{green}B"
     else
         status = status .. "{white}b"
-    end
-    if building.isWorkingOn then
-        status = status .. "{orange}W"
-    else
-        status = status .. " "
+        builtFlag = "#unbuilt"
     end
     local line1 = name .. string.rep(" ", padSize) .. status
     local pos = formatPos(building.location)
+    local buildingMax = maxCitizens(building)
     local citizens = "" .. #building.citizens
-    if #building.citizens < maxCitizens(building) then
-        citizens = "{red}" .. citizens
+    local fillFlag = ""
+    if #building.citizens < buildingMax then
+        citizens = "{red}" .. citizens .. "/" .. buildingMax
+        fillFlag = "#vacancies"
     elseif #building.citizens == 0 then
         citizens = ""
+    elseif #building.citizens >= buildingMax then
+        fillFlag = "#full"
     end
-    local line2 = " " .. pos .. string.rep(" ", width - 2 - string.len(pos) - UI.strlen(citizens)) .. citizens
+
+    local line2 = " " .. pos .. string.rep(" ", width - 1 - string.len(pos) - UI.strlen(citizens)) .. citizens
     return {
         text=line1 .. "\n" .. line2,
+        filterable={
+            translate(building.name),
+            "" .. building.level,
+            workingFlag,
+            guardedFlag,
+            builtFlag,
+            fillFlag
+        },
         building=building
     }
 end
 
 local function shouldShowBuilding(building, filterText)
-    return string.find(string.lower(translate(building.name)), filterText) ~= nil
+    if filterText == "" then
+        return true
+    end
+    local filterItems = buildingRow(building, 30).filterable
+    for index, value in ipairs(filterItems) do
+        if value ~= "" and string.find(string.lower(value), filterText) ~= nil then
+            return true
+        end
+    end
+    return false
 end
 
 local function reloadBuildings(colony, filterField, countLabel, buildingList)
