@@ -68,14 +68,19 @@ tabBar = UI.TabBar.new{x=0,y=1,w=ui.base.w,h=ui.base.h-1,bg=colors.black, tabs={
         content=require("colony/citizens")(colony, contentWidth, contentHeight)
     },
     {
+        bg=colors.green, fg=colors.black,
+        key="V", name="Visitors",
+        content=require("colony/visitors")(colony, contentWidth, contentHeight)
+    },
+    {
         bg=colors.orange, fg=colors.black,
         key="B", name="Buildings",
         content=require("colony/buildings")(colony, contentWidth, contentHeight)
     },
     {
-        bg=colors.pink, fg=colors.black,
-        key="R", name="Research",
-        content=notImplementedView("Research")
+        bg=colors.cyan, fg=colors.black,
+        key="Q", name="Requests",
+        content=notImplementedView("Requests")
     },
     {
         bg=colors.purple, fg=colors.black,
@@ -83,14 +88,9 @@ tabBar = UI.TabBar.new{x=0,y=1,w=ui.base.w,h=ui.base.h-1,bg=colors.black, tabs={
         content=require("colony/work_orders")(colony, contentWidth, contentHeight)
     },
     {
-        bg=colors.green, fg=colors.black,
-        key="V", name="Visitors",
-        content=require("colony/visitors")(colony, contentWidth, contentHeight)
-    },
-    {
-        bg=colors.cyan, fg=colors.black,
-        key="P", name="Optimization",
-        content=notImplementedView("Optimization")
+        bg=colors.pink, fg=colors.black,
+        key="R", name="Research",
+        content=notImplementedView("Research")
     },
     {
         bg=colors.yellow, fg=colors.black,
