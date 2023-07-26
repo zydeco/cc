@@ -9,14 +9,29 @@ local function findBuilding(colony, type, location)
     end)[1]
 end
 
+local function getOrderNeededResources(resources)
+    local needed = 0
+    for index, value in ipairs(resources) do
+        if value.needed > value.available then
+            needed = needed + (value.needed - value.available)
+        end
+    end
+    return needed
+end
+
 local function orderRow(order, colony)
     -- target building
     local line1 = order.buildingName
 
-    -- order type
+    -- order type & needed resources
     local line2 = " " .. string.gsub(string.lower(order.workOrderType), "^%l", string.upper)
     if order.workOrderType == "UPGRADE" then
         line2 = line2 .. string.format(" %d>%d", order.targetLevel-1, order.targetLevel)
+    end
+    local resources = colony.getWorkOrderResources(order.id)
+    local needed = getOrderNeededResources(resources)
+    if needed > 0 then
+        line2 = line2 .. string.format(" {red}!%d", needed)
     end
 
     -- worker
