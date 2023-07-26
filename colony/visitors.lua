@@ -57,7 +57,7 @@ local function detailForVisitor(visitor)
 
     local topJobs = bestJobs(visitor, finalJobs(), 10) or {}
     for _,job in ipairs(topJobs) do
-        table.insert(lines, string.format("    {green}%2d {orange}%2d {fg}%s", job[3], job[4], translate(job[2])))
+        table.insert(lines, "    " .. formatJobLine(job))
     end
 
     return lines

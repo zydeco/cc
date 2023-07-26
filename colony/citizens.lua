@@ -166,18 +166,16 @@ local function detailForCitizen(citizenId, citizens, showChildren, showBestJobs)
     end
 
     local topJobs = bestJobs(citizen, nil, 5) or {}
-    if not hasBestJob(citizen, topJobs) then
-        if #topJobs == 1 then
-            table.insert(lines, "  Best:   " .. translate(topJobs[1][2]))
-        else
-            if showBestJobs then
-                table.insert(lines, "  {link=hideBestJobs}Best jobs \x1f{link=}")
-                for _,job in ipairs(topJobs) do
-                    table.insert(lines, string.format("    %s {blue}%d", translate(job[2]), job[1]))
-                end
-            else
-                table.insert(lines, "  {link=showBestJobs}Best jobs \x10{link=}")
+    if #topJobs == 1 then
+        table.insert(lines, "  Best:   " .. translate(topJobs[1][2]))
+    else
+        if showBestJobs then
+            table.insert(lines, "  {link=hideBestJobs}Best jobs \x1f{link=}")
+            for _,job in ipairs(topJobs) do
+                table.insert(lines, "    " .. formatJobLine(job))
             end
+        else
+            table.insert(lines, "  {link=showBestJobs}Best jobs \x10{link=}")
         end
     end
 

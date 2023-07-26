@@ -98,6 +98,20 @@ local JOBS_FOR_BUILDING = {
     ["com.minecolonies.building.warehouse"] = nil, -- assign couriers to courier huts
 }
 
+local SKILL_ABBREVIATION = {
+    Adaptability="a",
+    Agility="g",
+    Athletics="h",
+    Creativity="c",
+    Dexterity="d",
+    Focus="f",
+    Intelligence="i",
+    Knowledge="k",
+    Mana="m",
+    Stamina="s",
+    Strength="t",
+}
+
 local function isAdultJob(job)
     return job ~= "com.minecolonies.job.pupil"
 end
@@ -212,7 +226,13 @@ function sortJobs(skills, jobs, minScore, includeScore)
             local skill1 = JOB_SKILLS[job][1]
             if type(skill1) == "table" then skill1 = skill1[1] end
             local skill2 = JOB_SKILLS[job][2]
-            return {scores[job], job, skills[skill1].level, skills[skill2].level}
+            return {scores[job], job, {
+                skill=skill1,
+                level=skills[skill1].level
+            },{
+                skill=skill2,
+                level=skills[skill2].level
+            }}
         end)
     end
     return sortedJobs
@@ -316,4 +336,17 @@ function hasBestJob(citizen, jobs)
         end
     end
     return false
+end
+
+function formatJobLine(job)
+    local jobName = translate(job[2])
+    local primarySkill = job[3]
+    local secondarySkill = job[4]
+    if primarySkill and secondarySkill then
+        return string.format("{green}%2d%s{orange}%2d%s{fg}%s", primarySkill.level, SKILL_ABBREVIATION[primarySkill.skill], secondarySkill.level, SKILL_ABBREVIATION[secondarySkill.skill], jobName)
+    elseif primarySkill then
+        return string.format("{green}%2d%s{orange}%-- {fg}%s", primarySkill.level, SKILL_ABBREVIATION[primarySkill.skill], jobName)
+    else
+        error("invalid job (no skills info)")
+    end
 end
