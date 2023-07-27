@@ -119,7 +119,7 @@ local function getParents(citizens, id)
     return parents
 end
 
-local function detailForCitizen(citizenId, citizens, showChildren, showBestJobs)
+local function detailForCitizen(citizenId, citizens, state)
     local citizen = getCitizen(citizens, citizenId)
     local lines = {
         "{align=center}" .. citizen.name,
@@ -169,7 +169,7 @@ local function detailForCitizen(citizenId, citizens, showChildren, showBestJobs)
     if #topJobs == 1 then
         table.insert(lines, "  Best:   " .. translate(topJobs[1][2]))
     else
-        if showBestJobs then
+        if state.showBestJobs then
             table.insert(lines, "  {link=hideBestJobs}Best jobs \x1f{link=}")
             for _,job in ipairs(topJobs) do
                 table.insert(lines, "    " .. formatJobLine(job))
@@ -187,7 +187,7 @@ local function detailForCitizen(citizenId, citizens, showChildren, showBestJobs)
     end
 
     if #citizen.children > 0 then
-        if showChildren then
+        if state.showChildren then
             table.insert(lines, dataField("  Children", "{link=hideChildren}" .. #citizen.children .. " \x1f{link=}"))
             for index, child in ipairs(citizen.children) do
                 local childName = citizenName(citizens, child)
@@ -208,10 +208,10 @@ local function detailForCitizen(citizenId, citizens, showChildren, showBestJobs)
     return lines
 end
 
-local function showDetailForCitizen(detailView, citizen, citizens, showChildren, showBestJobs)
+local function showDetailForCitizen(detailView, citizen, citizens)
     detailView.hidden = false
     detailView.citizen = citizen
-    detailView.items = detailForCitizen(citizen, citizens, showChildren, showBestJobs)
+    detailView.items = detailForCitizen(citizen, citizens, detailView.state)
     detailView:redraw()
 end
 
@@ -261,25 +261,25 @@ local detailView = UI.List.new{
     hidden=true,
     items={}
 }
+detailView.state = {}
 box:add(detailView)
 
 detailView.onLink = function(self, link)
     local id = detailView.citizen
+    local state = detailView.state
     if link == "showChildren" then
-        self.showChildren = true
+        state.showChildren = true
     elseif link == "hideChildren" then
-        self.showChildren = false
+        state.showChildren = false
     elseif link == "showBestJobs" then
-        self.showBestJobs = true
-        showDetailForCitizen(self, detailView.citizen, colony.getCitizens())
+        state.showBestJobs = true
     elseif link == "hideBestJobs" then
-        self.showBestJobs = false
+        state.showBestJobs = false
     elseif string.sub(link, 1, 8) == "citizen/" then
         id = tonumber(string.sub(link, 9))
-        self.showChildren = false
-        self.showBestJobs = false
+        detailView.state = {}
     end
-    showDetailForCitizen(self, id, colony.getCitizens(), self.showChildren, self.showBestJobs)
+    showDetailForCitizen(self, id, colony.getCitizens())
 end
 
 citizenList.onSelect = function(self, index, item)
