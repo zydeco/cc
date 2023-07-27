@@ -90,30 +90,17 @@ local function buildingRow(building, width)
     }
 end
 
-local function shouldShowBuilding(building, filterText)
-    if filterText == "" then
-        return true
-    end
-    local filterItems = buildingRow(building, 30).filterable
-    for index, value in ipairs(filterItems) do
-        if value ~= "" and string.find(string.lower(value), filterText) ~= nil then
-            return true
-        end
-    end
-    return false
-end
-
 local function reloadBuildings(colony, filterField, countLabel, buildingList)
     local filterText = string.lower(filterField.text or "")
     local buildings = filter(colony.getBuildings(), function (b)
         -- don't count postbox or stash as separate buildings
         return b.type ~= "postbox" and b.type ~= "stash"
     end)
+    local rowWidth = buildingList.w
     local visibleBuildings = filter(buildings, function(building)
-        return shouldShowBuilding(building, filterText)
+        return shouldShowRow(buildingRow(building, rowWidth), filterText)
     end)
     local hasScrollBar = (#visibleBuildings * buildingList.rowHeight) > buildingList.h
-    local rowWidth = buildingList.w
     if hasScrollBar then
         rowWidth = buildingList.w - 2
     end

@@ -39,34 +39,35 @@ local function citizenRow(citizen, width)
     if citizen.age ~= "adult" then
         ageIcon = "{gray}" .. citizen.age
     end
+    local filterable = {citizen.name, citizen.age}
     if citizen.work then
+        local jobName = translate(citizen.work.job or citizen.work.name)
         local job = formatWork(citizen.work, width - 2 - UI.strlen(ageIcon))
         local jobPrefix = " "
         if hasBestJob(citizen) then
             jobPrefix = "{green}\x03{fg}"
         end
         line2 = jobPrefix .. job .. string.rep(" ", width - 1 - string.len(job) - UI.strlen(ageIcon)) .. ageIcon
+        table.insert(filterable, jobName)
+        table.insert(filterable, "" .. citizen.work.level)
     else
         line2 = " {red}unemployed" .. string.rep(" ", width - 11 - UI.strlen(ageIcon)) .. ageIcon
+        table.insert(filterable, "unemployed")
     end
     return {
         text=line1 .. "\n" .. line2,
+        filterable=filterable,
         citizen=citizen.id
     }
 end
 
-local function shouldShowCitizen(citizen, filterText)
-    return string.find(string.lower(citizen.name), filterText) ~= nil or
-    (citizen.work ~= nil and string.find(string.lower(translate(citizen.work.job or citizen.work.name)), filterText) == 1)
-end
-
 local function reloadCitizens(colony, filterField, countLabel, citizenList)
     local filterText = string.lower(filterField.text or "")
+    local rowWidth = citizenList.w
     local visibleCitizens = filter(colony.getCitizens(), function(citizen)
-        return shouldShowCitizen(citizen, filterText)
+        return shouldShowRow(citizenRow(citizen, rowWidth), filterText)
     end)
     local hasScrollBar = (#visibleCitizens * citizenList.rowHeight) > citizenList.h
-    local rowWidth = citizenList.w
     if hasScrollBar then
         rowWidth = citizenList.w - 2
     end

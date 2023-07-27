@@ -55,19 +55,6 @@ local function orderRow(order, colony)
     }
 end
 
-local function shouldShowOrder(order, colony, filterText)
-    if filterText == "" then
-        return true
-    end
-    local filterItems = orderRow(order, colony).filterable
-    for index, value in ipairs(filterItems) do
-        if value ~= "" and string.find(string.lower(value), filterText) ~= nil then
-            return true
-        end
-    end
-    return false
-end
-
 local function reloadWorkOrders(colony, filterField, countLabel, orderList)
     local filterText = string.lower(filterField.text or "")
     local allOrders = colony.getWorkOrders()
@@ -76,7 +63,7 @@ local function reloadWorkOrders(colony, filterField, countLabel, orderList)
         return order.type ~= "WorkOrderMiner"
     end)
     local visibleOrders = filter(orders, function(order)
-        return shouldShowOrder(order, colony, filterText)
+        return shouldShowRow(orderRow(order, colony), filterText)
     end)
     orderList.items = map(visibleOrders, function(order)
         return orderRow(order, colony)

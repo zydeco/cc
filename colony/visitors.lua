@@ -9,35 +9,34 @@ local function visitorRow(visitor)
     local itemName =  string.gsub(string.gsub(visitor.recruitCost.displayName, "^ +", ""), "[%[%]]", "")
     local line2 = string.format(" %d{gray}x{fg}%s", visitor.recruitCost.count, itemName)
 
+    local filterable = {
+        visitor.name,
+        itemName, 
+        "" .. visitor.recruitCost.count
+    }
+
     -- best jobs
     local jobs = bestJobs(visitor, finalJobs(), 3)
     local line3 = " "
     for index, job in ipairs(jobs) do
         local jobName = translate(job[2])
         line3 = line3 .. jobName .. ", "
+        table.insert(filterable, jobName)
     end
+
     return {
         text=line1 .. "\n" .. line2 .. "\n" .. line3,
+        filterable=filterable,
         visitor=visitor
     }
-end
-
-local function shouldShowVisitor(visitor, filterText)
-    local visitorText = visitorRow(visitor).text
-    return string.find(string.lower(visitorText), filterText) ~= nil
 end
 
 local function reloadVisitors(colony, filterField, countLabel, visitorList)
     local filterText = string.lower(filterField.text or "")
     local visitors = colony.getVisitors()
     local visibleVisitors = filter(visitors, function(visitor)
-        return shouldShowVisitor(visitor, filterText)
+        return shouldShowRow(visitorRow(visitor), filterText)
     end)
-    local hasScrollBar = (#visibleVisitors * visitorList.rowHeight) > visitorList.h
-    local rowWidth = visitorList.w
-    if hasScrollBar then
-        rowWidth = visitorList.w - 2
-    end
     visitorList.items = map(visibleVisitors, function(visitor)
         return visitorRow(visitor)
     end)

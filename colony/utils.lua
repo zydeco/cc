@@ -188,3 +188,15 @@ function getById(list, id)
     end
     error("item with id " .. id .. " not found in list")
 end
+
+function shouldShowRow(row, filterText)
+    if filterText == "" then
+        return true
+    end
+    for index, value in ipairs(row.filterable) do
+        if value ~= "" and string.find(string.lower(value), filterText) ~= nil then
+            return true
+        end
+    end
+    return false
+end
