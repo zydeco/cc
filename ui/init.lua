@@ -70,6 +70,44 @@ local function showDebugMsg(ui)
     end
 end
 
+local function normalizeKey(k)
+    if k == keys.rightCtrl then
+        return keys.leftCtrl
+    elseif k == keys.rightAlt then
+        return keys.leftAlt
+    elseif k == keys.rightShift then
+        return keys.leftShift
+    else
+        return k
+    end
+end
+
+local function modifierKeysDown(keysDown)
+    -- returns true if alt or ctrl are down
+    for kc,_ in pairs(keysDown) do
+        if kc == keys.leftCtrl or kc == keys.leftAlt then
+            return true
+        end
+    end
+    return false
+end
+
+local function handleKeyboardShortcut(ui)
+    if ui.keyHandler == nil or modifierKeysDown(ui.keysDown) then
+        local keyList = {}
+        for k, _ in pairs(ui.keysDown) do
+            table.insert(keyList, k)
+        end
+        table.sort(keyList)
+        local shortcut = ui.keyboardShortcuts[table.concat(keyList, "+")]
+        if shortcut then
+            shortcut()
+            return true
+        end
+    end
+    return false
+end
+
 local function handleEvent(ui)
     local event, p1, p2, p3 = os.pullEvent()
     if string.sub(event, 1, 6) ~= "_CCPC_" then
@@ -80,6 +118,7 @@ local function handleEvent(ui)
         local hit, hitX, hitY = hitTest(ui.base.subviews, p2-1, p3-1)
         if event ~= "mouse_scroll" then
             ui.keyHandler = nil
+            ui.keysDown = {}
         end
         if event == "mouse_click" and ui._menu and hit ~= ui._menu then
             ui:hideMenu()
@@ -110,12 +149,24 @@ local function handleEvent(ui)
         if timer.times == nil or timer.times > 0 then
             ui.timers[os.startTimer(timer.interval)] = timer
         end
-    elseif event == "key" and ui.keyHandler and ui.keyHandler.onKeyDown then
+    elseif event == "key" then
         -- onKeyDown(self, key, held)
-        ui.keyHandler.onKeyDown(ui.keyHandler, p1, p2)
-    elseif event == "key_up" and ui.keyHandler and ui.keyHandler.onKeyUp then
+        if not p2 then
+            ui.keysDown[normalizeKey(p1)] = true
+            if handleKeyboardShortcut(ui) then
+                ui.keyHandler = nil
+                return
+            end
+        end
+        if ui.keyHandler and ui.keyHandler.onKeyDown then
+            ui.keyHandler.onKeyDown(ui.keyHandler, p1, p2)
+        end
+    elseif event == "key_up" then
         -- onKeyUp(self, key)
-        ui.keyHandler.onKeyUp(ui.keyHandler, p1)
+        ui.keysDown[p1] = nil
+        if ui.keyHandler and ui.keyHandler.onKeyUp then
+            ui.keyHandler.onKeyUp(ui.keyHandler, p1)
+        end
     elseif event == "char" and ui.keyHandler and ui.keyHandler.onChar then
         -- onChar(self, char)
         ui.keyHandler.onChar(ui.keyHandler, p1)
@@ -125,7 +176,7 @@ end
 local function handleField(ui)
     local term = ui.term
     local kh = ui.keyHandler
-    if kh then
+    if kh and kh ~= ui then
         term.setTextColor(kh.cursorColor or kh.fg)
         term.setCursorPos(kh.abs.x + kh.cursor, kh.abs.y)
         term.setCursorBlink(true)
@@ -141,6 +192,7 @@ function UI:run()
     term.setCursorBlink(false)
     ui.running = true
     ui.msg = "started"
+    ui.keysDown = {}
     term.setBackgroundColor(colors.white)
     term.setTextColor(colors.black)
     term.clear()
@@ -181,6 +233,7 @@ function UI.new(term)
         running=false,
         term=term,
         timers={},
+        keyboardShortcuts={}
     }, {__index=UI})
     local w, h = term.getSize()
     self.base = UI.Box.new{x=1, y=1, w=w, h=h, bg=colors.white}
@@ -206,4 +259,9 @@ function UI:hideMenu()
         self._menu:removeFromSuperview()
         self._menu = nil
     end
+end
+
+function UI:registerKeyboardShortcut(keyList, shortcut)
+    table.sort(keyList)
+    self.keyboardShortcuts[table.concat(keyList, "+")] = shortcut
 end
