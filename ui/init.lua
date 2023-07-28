@@ -110,8 +110,8 @@ end
 
 local function handleEvent(ui)
     local event, p1, p2, p3 = os.pullEvent()
-    if string.sub(event, 1, 6) ~= "_CCPC_" then
-        ui.msg = (event or "") .. "," .. (p1 or "") .. "," .. (p2 or "") .. "," .. (p3 or "")
+    if ui.debug and string.sub(event, 1, 6) ~= "_CCPC_" then
+        ui.msg = (event or "") .. "," .. tostring(p1) .. "," .. tostring(p2) .. "," .. tostring(p3)
     end
     if event == "mouse_click" or event == "mouse_up" or event == "monitor_touch" or event == "mouse_scroll" then
         -- mouse event
