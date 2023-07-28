@@ -100,14 +100,14 @@ tabBar = UI.TabBar.new{x=0,y=1,w=ui.base.w,h=ui.base.h-1,bg=colors.black, tabs={
 }}
 ui:add(tabBar)
 
-ui:registerKeyboardShortcut({keys.leftCtrl, keys.o}, function() tabBar:selectTab(1) end)
-ui:registerKeyboardShortcut({keys.leftCtrl, keys.c}, function() tabBar:selectTab(2) end)
-ui:registerKeyboardShortcut({keys.leftCtrl, keys.v}, function() tabBar:selectTab(3) end)
-ui:registerKeyboardShortcut({keys.leftCtrl, keys.b}, function() tabBar:selectTab(4) end)
-ui:registerKeyboardShortcut({keys.leftCtrl, keys.q}, function() tabBar:selectTab(5) end)
-ui:registerKeyboardShortcut({keys.leftCtrl, keys.w}, function() tabBar:selectTab(6) end)
-ui:registerKeyboardShortcut({keys.leftCtrl, keys.r}, function() tabBar:selectTab(7) end)
-ui:registerKeyboardShortcut({keys.leftCtrl, keys.m}, function() tabBar:selectTab(8) end)
-ui:registerKeyboardShortcut({keys.leftCtrl, keys.e}, function() error("shortcut") end)
+ui:registerKeyboardShortcut({keys.o}, function() tabBar:selectTab(1) end)
+ui:registerKeyboardShortcut({keys.c}, function() tabBar:selectTab(2) end)
+ui:registerKeyboardShortcut({keys.v}, function() tabBar:selectTab(3) end)
+ui:registerKeyboardShortcut({keys.b}, function() tabBar:selectTab(4) end)
+ui:registerKeyboardShortcut({keys.q}, function() tabBar:selectTab(5) end)
+ui:registerKeyboardShortcut({keys.w}, function() tabBar:selectTab(6) end)
+ui:registerKeyboardShortcut({keys.r}, function() tabBar:selectTab(7) end)
+ui:registerKeyboardShortcut({keys.m}, function() tabBar:selectTab(8) end)
+ui:registerKeyboardShortcut({keys.e}, function() error("shortcut") end)
 
 ui:run()
