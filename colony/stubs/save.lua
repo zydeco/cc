@@ -75,7 +75,9 @@ for i=1,#w do
   local wo = w[i]
   wor[wo.id] = ci.getWorkOrderResources(wo.id)
   local builder = wo.builder
-  br[builder] = ci.getBuilderResources(builder)
+  if builder ~= nil then
+    br[builder] = ci.getBuilderResources(builder)
+  end
 end
 
 wm(f, "getWorkOrderResources", wor)

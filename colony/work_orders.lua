@@ -10,6 +10,9 @@ local function findBuilding(colony, type, location)
 end
 
 local function getOrderNeededResources(resources)
+    if resources == nil then
+        return 0
+    end
     local needed = 0
     for index, value in ipairs(resources) do
         if value.needed > value.available then
@@ -39,8 +42,12 @@ local function orderRow(order, colony)
     local builderName = ""
     if order.isClaimed then
         local builder = findBuilding(colony, "builder", order.builder)
-        builderName = builder.citizens[1].name
-        line3 = " " .. builderName
+        if #builder.citizens > 0 then
+          builderName = builder.citizens[1].name
+          line3 = " " .. builderName
+        else
+          line3 = " {red}missing builder"
+        end
     end
 
     return {
