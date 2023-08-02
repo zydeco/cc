@@ -22,7 +22,7 @@ local function getOrderNeededResources(resources)
     return needed
 end
 
-local function orderRow(order, colony)
+local function orderRow(order, colony, isActive)
     -- target building
     local line1 = order.buildingName
 
@@ -31,10 +31,14 @@ local function orderRow(order, colony)
     if order.workOrderType == "UPGRADE" then
         line2 = line2 .. string.format(" %d>%d", order.targetLevel-1, order.targetLevel)
     end
-    local resources = colony.getWorkOrderResources(order.id)
-    local needed = getOrderNeededResources(resources)
-    if needed > 0 then
-        line2 = line2 .. string.format(" {red}!%d", needed)
+    if isActive then
+        local resources = colony.getWorkOrderResources(order.id)
+        local needed = getOrderNeededResources(resources)
+        if needed > 0 then
+            line2 = line2 .. string.format(" {red}!%d", needed)
+        end
+    else
+        line2 = line2 .. " {gray}(queued)"
     end
 
     -- worker
@@ -62,6 +66,17 @@ local function orderRow(order, colony)
     }
 end
 
+local function currentOrderIdForBuilder(builder, allOrders)
+    -- is this the same? https://github.com/ldtteam/minecolonies/blob/ce3539919863e3814bba1edf22668546e2f24c3e/src/main/java/com/minecolonies/coremod/client/gui/WindowResourceList.java#L314-L315
+    local ordersForBuilder = filter(allOrders, function(order)
+        return order.builder ~= nil and sameLocation(order.builder, builder)
+    end)
+    table.sort(ordersForBuilder, function(a, b)
+        return a.priority < b.priority
+    end)
+    return ordersForBuilder[1].id
+end
+
 local function reloadWorkOrders(colony, filterField, countLabel, orderList)
     local filterText = string.lower(filterField.text or "")
     local allOrders = colony.getWorkOrders()
@@ -73,7 +88,8 @@ local function reloadWorkOrders(colony, filterField, countLabel, orderList)
         return shouldShowRow(orderRow(order, colony), filterText)
     end)
     orderList.items = map(visibleOrders, function(order)
-        return orderRow(order, colony)
+        local isCurrentWorkOrder = currentOrderIdForBuilder(order.builder, allOrders) == order.id
+        return orderRow(order, colony, isCurrentWorkOrder)
     end)
     orderList:redraw()
 
