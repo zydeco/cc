@@ -2,10 +2,7 @@ require("colony/utils")
 
 local function findBuilding(colony, type, location)
     return filter(colony.getBuildings(), function(building)
-        return building.type == type and
-            building.location.x == location.x and
-            building.location.y == location.y and
-            building.location.z == location.z
+        return building.type == type and sameLocation(building.location, location)
     end)[1]
 end
 
@@ -44,7 +41,7 @@ local function orderRow(order, colony, isActive)
     -- worker
     local line3 = " {gray}unclaimed"
     local builderName = ""
-    if order.isClaimed then
+    if order.isClaimed and order.builder ~= nil then
         local builder = findBuilding(colony, "builder", order.builder)
         if #builder.citizens > 0 then
           builderName = builder.citizens[1].name
@@ -67,10 +64,16 @@ local function orderRow(order, colony, isActive)
 end
 
 local function currentOrderIdForBuilder(builder, allOrders)
+    if builder == nil then
+        return nil
+    end
     -- is this the same? https://github.com/ldtteam/minecolonies/blob/ce3539919863e3814bba1edf22668546e2f24c3e/src/main/java/com/minecolonies/coremod/client/gui/WindowResourceList.java#L314-L315
     local ordersForBuilder = filter(allOrders, function(order)
         return order.builder ~= nil and sameLocation(order.builder, builder)
     end)
+    if #ordersForBuilder == 0 then
+        return nil
+    end
     table.sort(ordersForBuilder, function(a, b)
         return a.priority < b.priority
     end)
