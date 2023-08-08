@@ -19,7 +19,7 @@ local function visitorRow(visitor)
     local jobs = bestJobs(visitor, finalJobs(), 3)
     local line3 = " "
     for index, job in ipairs(jobs) do
-        local jobName = translate(job[2])
+        local jobName = translate(job[2], true)
         line3 = line3 .. jobName .. ", "
         table.insert(filterable, jobName)
     end

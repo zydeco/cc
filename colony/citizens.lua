@@ -168,7 +168,7 @@ local function detailForCitizen(citizenId, citizens, state)
 
     local topJobs = bestJobs(citizen, nil, 5) or {}
     if #topJobs == 1 then
-        table.insert(lines, "  Best:   " .. translate(topJobs[1][2]))
+        table.insert(lines, "  Best:   " .. translate(topJobs[1][2], true))
     else
         if state.showBestJobs then
             table.insert(lines, "  {link=hideBestJobs}Best jobs \x1f{link=}")

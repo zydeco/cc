@@ -339,7 +339,7 @@ function hasBestJob(citizen, jobs)
 end
 
 function formatJobLine(job)
-    local jobName = translate(job[2])
+    local jobName = translate(job[2], true)
     local primarySkill = job[3]
     local secondarySkill = job[4]
     if primarySkill and secondarySkill then

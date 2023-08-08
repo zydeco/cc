@@ -133,7 +133,7 @@ function distance(pos1, pos2)
 end
 
 local STRINGS=require("colony/strings")
-function translate(key)
+function translate(key, highlight_missing)
     if type(key) ~= "string" then
         return "{bg=red}{white}TABLE?{bg=bg}{fg}"
     end
@@ -142,7 +142,11 @@ function translate(key)
     end
     local translated = STRINGS[key]
     if translated == nil then
-        translated = "{bg=red}{white}" .. key .. "{bg=bg}{fg}"
+        if highlight_missing then
+            translated = "{bg=red}{white}" .. key .. "{bg=bg}{fg}"
+        else
+            translated = key
+        end
     end
     return translated
 end
