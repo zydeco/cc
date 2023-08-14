@@ -18,9 +18,10 @@ local function citizenRow(citizen, width)
     local happinessIcon = formatHappiness(citizen.happiness, "X")
     local stateIcon = " "
     local lowHealth = citizen.health and citizen.maxHealth and citizen.health < (citizen.maxHealth * 0.1)
+    local homeless = citizen.home == nil
     if lowHealth then
         warnIcon = "{red}\x03"
-    elseif citizen.homeless then
+    elseif homeless then
         warnIcon = "{red}h"
     elseif citizen.betterFood then
         warnIcon = "{red}f"
@@ -122,6 +123,7 @@ end
 
 local function detailForCitizen(citizenId, citizens, state)
     local citizen = getCitizen(citizens, citizenId)
+    local homeless = citizen.home == nil
     local lines = {
         "{align=center}" .. citizen.name,
         "{align=center}{gray}" .. citizen.age .. " " .. citizen.gender,
@@ -135,7 +137,7 @@ local function detailForCitizen(citizenId, citizens, state)
         table.insert(lines, "  {red}needs better food")
     end
 
-    if citizen.homeless then 
+    if homeless then 
         table.insert(lines, dataField("  Home", "{red}none"))
     elseif not worksFromHome(citizen) then
         local home = citizen.home
@@ -150,7 +152,7 @@ local function detailForCitizen(citizenId, citizens, state)
         table.insert(lines, dataField("  Job", formatWork(work, 16)))
         table.insert(lines, dataField("", translate(work.name)))
         table.insert(lines, dataField("", formatPos(work.location)))
-        if not citizen.homeless then
+        if not homeless then
             local commute = distance(citizen.home.location, work.location)
             local commuteGrade = "green"
             if commute > 160 then
