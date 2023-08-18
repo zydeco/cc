@@ -53,7 +53,7 @@ local function orderRow(order, colony, isActive)
 
     return {
         text=line1 .. "\n" .. line2 .. "\n" .. line3,
-        filterable={
+        tags={
             order.buildingName,
             order.workOrderType,
             order.targetLevel or "",

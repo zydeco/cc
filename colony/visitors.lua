@@ -9,7 +9,7 @@ local function visitorRow(visitor)
     local itemName =  string.gsub(string.gsub(visitor.recruitCost.displayName, "^ +", ""), "[%[%]]", "")
     local line2 = string.format(" %d{gray}x{fg}%s", visitor.recruitCost.count, itemName)
 
-    local filterable = {
+    local tags = {
         visitor.name,
         itemName, 
         "" .. visitor.recruitCost.count
@@ -21,12 +21,12 @@ local function visitorRow(visitor)
     for index, job in ipairs(jobs) do
         local jobName = translate(job[2], true)
         line3 = line3 .. jobName .. ", "
-        table.insert(filterable, jobName)
+        table.insert(tags, jobName)
     end
 
     return {
         text=line1 .. "\n" .. line2 .. "\n" .. line3,
-        filterable=filterable,
+        tags=tags,
         visitor=visitor
     }
 end

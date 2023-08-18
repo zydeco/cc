@@ -197,10 +197,29 @@ function shouldShowRow(row, filterText)
     if filterText == "" then
         return true
     end
-    for index, value in ipairs(row.filterable) do
-        if value ~= "" and string.find(string.lower(value), filterText) ~= nil then
-            return true
+    -- match all tags
+    for word in string.gmatch(filterText, "([^%s]+)") do
+        word = string.lower(word)
+        local tagMatch = false
+        for index, tag in ipairs(row.tags) do
+            if tag == nil or tag == "" then
+                -- skip empty tag
+            elseif string.sub(tag, 1, 1) == "#" then
+                -- match whole tag?
+                if word == tag then
+                    tagMatch = true
+                    break
+                end
+            elseif string.find(string.lower(tag), word) ~= nil then
+                -- match partial
+                tagMatch = true
+                break
+            end
+        end
+        if not tagMatch then
+            return false
         end
     end
-    return false
+    return true
 end
+

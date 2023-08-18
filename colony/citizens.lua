@@ -43,7 +43,7 @@ local function citizenRow(citizen, width)
     if citizen.age ~= "adult" then
         ageIcon = "{gray}" .. citizen.age
     end
-    local filterable = {citizen.name, citizen.age}
+    local tags = {citizen.name, "#" .. citizen.age}
     if citizen.work then
         local jobName = translate(citizen.work.job or citizen.work.name)
         local job = formatWork(citizen.work, width - 2 - UI.strlen(ageIcon))
@@ -52,15 +52,18 @@ local function citizenRow(citizen, width)
             jobPrefix = "{green}\x03{fg}"
         end
         line2 = jobPrefix .. job .. string.rep(" ", width - 1 - string.len(job) - UI.strlen(ageIcon)) .. ageIcon
-        table.insert(filterable, jobName)
-        table.insert(filterable, "" .. citizen.work.level)
+        table.insert(tags, jobName)
+        table.insert(tags, "" .. citizen.work.level)
     else
         line2 = " {red}unemployed" .. string.rep(" ", width - 11 - UI.strlen(ageIcon)) .. ageIcon
-        table.insert(filterable, "unemployed")
+        table.insert(tags, "#unemployed")
+    end
+    if homeless then
+        table.insert(tags, "#homeless")
     end
     return {
         text=line1 .. "\n" .. line2,
-        filterable=filterable,
+        tags=tags,
         citizen=citizen.id
     }
 end

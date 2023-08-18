@@ -78,7 +78,7 @@ local function buildingRow(building, width)
     local line2 = " " .. pos .. string.rep(" ", width - 1 - string.len(pos) - UI.strlen(citizens)) .. citizens
     return {
         text=line1 .. "\n" .. line2,
-        filterable={
+        tags={
             translate(building.name),
             "" .. building.level,
             workingFlag,
