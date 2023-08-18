@@ -109,6 +109,33 @@ local visitorList = UI.List.new{
 }
 box:add(visitorList)
 
+-- help button
+box:add(helpButton(contentWidth-4,0,"(?)",function()
+    local helpWidth = contentWidth-2
+    local helpHeight = contentHeight-2
+    local container = UI.Box.new{
+        x=1,y=1,w=helpWidth,h=helpHeight,bg=colors.lightGray
+    }
+    local helpText = UI.Label.new{
+        x=1,y=0,w=helpWidth-2,h=helpHeight,bg=colors.lightGray,fg=colors.black,text=
+        "\x7f\x7f\x7f\x7f Visitor Row \x7f\x7f\x7f\x7f\x7f\n"..
+        " \n"..
+        "{bg=lightBlue}Visitor Name          {bg=bg}\n" ..
+        "{bg=lightBlue} Recruit cost         {bg=bg}\n" ..
+        "{bg=lightBlue} 3 Best jobs          {bg=bg}\n" ..
+        " \n"..
+        "\x7f\x7f\x7f\x7f\x7f\x7f Filter By \x7f\x7f\x7f\x7f\x7f\x7f\x7f\n"..
+        " \n"..
+        " \x04 Name\n"..
+        " \x04 Recruit cost item\n"..
+        " \x04 Recruit cost amount\n"..
+        " \x04 Preferred job\n"..
+        ""
+    }
+    container:add(helpText)
+    return container
+end, visitorList))
+
 local detailView = UI.List.new{
     x=0, y=0, w=contentWidth, h=contentHeight,
     bg=colors.white,

@@ -45,7 +45,7 @@ local function buildingRow(building, width)
     local builtFlag = "#built"
     if building.isWorkingOn then
         status = status .. "{orange}W"
-        workingFlag = "#working"
+        workingFlag = "#construction"
     else
         status = status .. " "
     end
@@ -202,6 +202,36 @@ local buildingList = UI.List.new{
     items={}, rowHeight=2
 }
 box:add(buildingList)
+
+-- help button
+box:add(helpButton(contentWidth-4,0,"(?)",function()
+    local helpWidth = contentWidth-2
+    local helpHeight = contentHeight-2
+    local container = UI.Box.new{
+        x=1,y=1,w=helpWidth,h=helpHeight,bg=colors.lightGray
+    }
+    local helpText = UI.Label.new{
+        x=1,y=0,w=helpWidth-2,h=helpHeight,bg=colors.lightGray,fg=colors.black,text=
+        "\x7f\x7f\x7f\x7f Building Row \x7f\x7f\x7f\x7f\n"..
+        " \n"..
+        "{bg=lightBlue}Building Name      {orange}W{green}G{green}B{bg=bg}\n" ..
+        "{bg=lightBlue} Location    Occupancy{bg=bg}\n" ..
+        " {orange}{bg=lightBlue}W{fg}{bg=bg} Construction\n"..
+        " {green}{bg=lightBlue}G{fg}/{red}g{fg}{bg=bg} Guarded/unguarded\n"..
+        " {green}{bg=lightBlue}B{fg}/{white}b{fg}{bg=bg} Built/not built\n"..
+        "\n"..
+        "\x7f\x7f\x7f\x7f\x7f\x7f Filter By \x7f\x7f\x7f\x7f\x7f\x7f\x7f\n"..
+        " \x04 Name\n"..
+        " \x04 Level\n"..
+        " \x04 #guarded/#unguarded\n"..
+        " \x04 #built/#unbuilt\n"..
+        " \x04 #construction\n"..
+        " \x04 #full/#vacancies\n"..
+        ""
+    }
+    container:add(helpText)
+    return container
+end, buildingList))
 
 local detailView = UI.Label.new{
     x=0, y=0, w=contentWidth, h=contentHeight,

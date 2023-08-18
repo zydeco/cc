@@ -223,3 +223,32 @@ function shouldShowRow(row, filterText)
     return true
 end
 
+function helpButton(x, y, text, helpViewProvider, viewToHide)
+    local btn = UI.Button.new{
+        x=x,y=y,w=string.len(text),h=1,text=text,
+        bg=colors.lightGray,fg=colors.gray,
+        action=function(self)
+            local helpView = self.helpView
+            if self.helpView == nil then
+                -- show help
+                self.helpView = helpViewProvider()
+                self.helpView.onMouseUp = function ()
+                    self.helpView:removeFromSuperview()
+                    self.helpView = nil
+                end
+                self.parent:add(self.helpView)
+                if viewToHide ~= nil then
+                    viewToHide:hide()
+                end
+            else
+                -- hide help
+                helpView:removeFromSuperview()
+                self.helpView = nil
+                if viewToHide ~= nil then
+                    viewToHide:show()
+                end
+            end
+        end
+    }
+    return btn
+end

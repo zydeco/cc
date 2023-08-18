@@ -264,6 +264,36 @@ local citizenList = UI.List.new{
 }
 box:add(citizenList)
 
+-- help button
+box:add(helpButton(contentWidth-4,0,"(?)",function()
+    local helpWidth = contentWidth-2
+    local helpHeight = contentHeight-2
+    local container = UI.Box.new{
+        x=1,y=1,w=helpWidth,h=helpHeight,bg=colors.lightGray
+    }
+    local helpText = UI.Label.new{
+        x=1,y=0,w=helpWidth-2,h=helpHeight,bg=colors.lightGray,fg=colors.black,text=
+        "\x7f\x7f\x7f\x7f Citizen Row \x7f\x7f\x7f\x7f\x7f\n"..
+        "{bg=lightBlue}Citizen Name       {red}1{blue}2{gray}3{bg=bg}\n" ..
+        "{bg=lightBlue}{green}\x03{black}Job & Level          {bg=bg}\n" ..
+        "1: {red}\x03{fg} Low health\n"..
+        "   {red}h{fg} Homeless\n"..
+        "   {red}f{fg} Need better food\n"..
+        "2: Happiness: {blue}\x02{fg}=10\n"..
+        "3: {gray}z{fg} Sleeping, {white}-{fg} Idle\n   {blue}w{fg} Working\n"..
+        "{green}\x03{fg}= Has best job\n"..
+        "\n"..
+        "\x7f\x7f\x7f\x7f\x7f\x7f Filter By \x7f\x7f\x7f\x7f\x7f\x7f\x7f\n"..
+        " \x04 Name, Job, Level\n"..
+        " \x04 #child, #adult\n"..
+        " \x04 #homeless\n"..
+        " \x04 #unemployed\n"..
+        ""
+    }
+    container:add(helpText)
+    return container
+end, citizenList))
+
 local detailView = UI.List.new{
     x=0, y=0, w=contentWidth, h=contentHeight,
     bg=colors.white,

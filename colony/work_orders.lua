@@ -22,6 +22,11 @@ end
 local function orderRow(order, colony, isActive)
     -- target building
     local line1 = order.buildingName
+    local tags = {
+        order.buildingName,
+        order.workOrderType,
+        order.targetLevel or "",
+    }
 
     -- order type & needed resources
     local line2 = " " .. string.gsub(string.lower(order.workOrderType), "^%l", string.upper)
@@ -33,32 +38,33 @@ local function orderRow(order, colony, isActive)
         local needed = getOrderNeededResources(resources)
         if needed > 0 then
             line2 = line2 .. string.format(" {red}!%d", needed)
+            table.insert(tags, "#needed")
+        else
+            table.insert(tags, "#ready")
         end
     else
         line2 = line2 .. " {gray}(queued)"
+        table.insert(tags, "#queued")
     end
 
     -- worker
     local line3 = " {gray}unclaimed"
-    local builderName = ""
     if order.isClaimed and order.builder ~= nil then
         local builder = findBuilding(colony, "builder", order.builder)
         if #builder.citizens > 0 then
-          builderName = builder.citizens[1].name
+          local builderName = builder.citizens[1].name
           line3 = " " .. builderName
+          table.insert(tags, builderName)
         else
           line3 = " {red}missing builder"
         end
+    else
+        table.insert(tags, "#unclaimed")
     end
 
     return {
         text=line1 .. "\n" .. line2 .. "\n" .. line3,
-        tags={
-            order.buildingName,
-            order.workOrderType,
-            order.targetLevel or "",
-            builderName
-        },
+        tags=tags,
         order=order
     }
 end
@@ -131,7 +137,7 @@ return function(colony, contentWidth, contentHeight)
         text="0/0"
     }
     box:add(countLabel)
-    
+
     -- list
     local orderList = UI.List.new{
         x=margin, y=2, w=innerWidth, h=contentHeight - 3,
@@ -139,7 +145,37 @@ return function(colony, contentWidth, contentHeight)
         items={}, rowHeight=3
     }
     box:add(orderList)
-    
+
+    -- help button
+    box:add(helpButton(contentWidth-4,0,"(?)",function()
+        local helpWidth = contentWidth-2
+        local helpHeight = contentHeight-2
+        local container = UI.Box.new{
+            x=1,y=1,w=helpWidth,h=helpHeight,bg=colors.lightGray
+        }
+        local helpText = UI.Label.new{
+            x=1,y=0,w=helpWidth-2,h=helpHeight,bg=colors.lightGray,fg=colors.black,text=
+            "\x7f\x7f\x7f Work Order Row \x7f\x7f\x7f\n"..
+            "{bg=lightBlue}Building Name         {bg=bg}\n" ..
+            "{bg=lightBlue} Type {gray}(status){fg}        {bg=bg}\n" ..
+            "{bg=lightBlue} Builder              {bg=bg}\n" ..
+            " Type: Build, Upgrade, etc\n" ..
+            " Status:\n" ..
+            "  {gray}(queued){fg}\n" ..
+            "  {red}!12{fg} needed resources\n" ..
+            " \n"..
+            "\x7f\x7f\x7f\x7f\x7f\x7f Filter By \x7f\x7f\x7f\x7f\x7f\x7f\x7f\n"..
+            " \x04 Building Name\n"..
+            " \x04 Type, Target Level\n"..
+            " \x04 Builder Name\n"..
+            " \x04 #queued/#unclaimed\n"..
+            " \x04 #needed/#ready\n"..
+            ""
+        }
+        container:add(helpText)
+        return container
+    end, orderList))
+
     local detailView = UI.List.new{
         x=0, y=0, w=contentWidth, h=contentHeight,
         bg=colors.white,
