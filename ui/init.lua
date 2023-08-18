@@ -41,8 +41,9 @@ local function hasView(views, target)
     return false
 end
 
-local function drawViews(ui, views, dx, dy)
+local function drawViews(ui, views, dx, dy, drawAll)
     local term = ui.term
+    local isAfterDirty = drawAll or false
     for i=1,#views do
         local view = views[i]
         view.abs = {
@@ -51,12 +52,14 @@ local function drawViews(ui, views, dx, dy)
         }
         -- draw this view
         if not view.hidden then
-            if view.dirty then
+            if view.dirty or isAfterDirty then
                 view:draw(term, dx, dy)
                 view.dirty = false
+                -- TODO: only redraw overlapping siblings
+                isAfterDirty = true
             end
             -- draw subviews
-            drawViews(ui, view.subviews or {}, view.x + dx, view.y + dy)
+            drawViews(ui, view.subviews or {}, view.x + dx, view.y + dy, isAfterDirty)
         end
     end
 end
