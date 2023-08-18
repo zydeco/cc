@@ -2,6 +2,9 @@ require("colony/jobs")
 require("colony/utils")
 
 local function formatHappiness(value, format)
+    if format == "X" and value == 10.0 then
+        return "{blue}\x02"
+    end
     return string.format("{%s}%" .. format, getRateColor(value / 10.0), value)
 end
 
