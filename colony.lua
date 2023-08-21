@@ -61,10 +61,11 @@ require("colony/utils")
 local statusBarWidth = 8 + digits(os.day())
 
 -- colony name
-ui:add(UI.Label.new{
+local nameLabel = UI.Label.new{
     x=0,y=0,w=w-statusBarWidth,h=1,text=colony.getColonyName(),
     bg=colors.black, fg=colors.white
-})
+}
+ui:add(nameLabel)
 
 -- date/time
 local statusBar = UI.Label.new{
@@ -80,7 +81,12 @@ ui:add(statusBar)
 -- TODO: accurately
 local tabBar = nil
 ui:addTimer(5.0, nil, function()
-    statusBar.text=formatTime()
+    local newName = colony.getColonyName()
+    if newName ~= nameLabel.text then
+        nameLabel.text = newName
+        nameLabel:redraw()
+    end
+    statusBar.text = formatTime()
     statusBar:redraw()
     if tabBar and tabBar.currentTab and tabBar.currentTab.refresh then
         tabBar.currentTab:refresh()
