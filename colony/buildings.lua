@@ -84,13 +84,14 @@ local function buildingRow(building, width)
             workingFlag,
             guardedFlag,
             builtFlag,
-            fillFlag
+            fillFlag,
+            building.style,
         },
         building=building
     }
 end
 
-local function reloadBuildings(colony, filterField, countLabel, buildingList)
+local function reloadBuildings(colony, filterField, countLabel, buildingList, sortOrder)
     local filterText = string.lower(filterField.text or "")
     local buildings = filter(colony.getBuildings(), function (b)
         -- don't count postbox or stash as separate buildings
@@ -100,6 +101,7 @@ local function reloadBuildings(colony, filterField, countLabel, buildingList)
     local visibleBuildings = filter(buildings, function(building)
         return shouldShowRow(buildingRow(building, rowWidth), filterText)
     end)
+    sortListBy(visibleBuildings, sortOrder.by, sortOrder.ascending)
     local hasScrollBar = (#visibleBuildings * buildingList.rowHeight) > buildingList.h
     if hasScrollBar then
         rowWidth = buildingList.w - 2
@@ -203,6 +205,46 @@ local buildingList = UI.List.new{
 }
 box:add(buildingList)
 
+
+-- sorting
+local sortOrder = {
+    ascending = true
+}
+local sortMenu = makeSortMenu(
+    sortOrder,
+    {
+        { text="Built", sortKey = nil },
+        { text="Name", sortKey = function(building)
+            return translate(building.name)
+        end},
+        { text="Level", sortKey = "level" },
+        { text="Occupancy", sortKey = function(building)
+            local max = maxCitizens(building)
+            if max == 0 then
+                return 1.1 -- show first/last
+            else
+                return #building.citizens / max
+            end
+        end},
+        { text="Population", sortKey = function(building)
+            return #building.citizens
+        end},
+        { text="Style", sortKey = "style"},
+        { text="Guarded", sortKey = function(building)
+            if building.guarded then
+                return 1
+            else
+                return 0
+            end
+        end},
+    },
+    function()
+        reloadBuildings(colony, filterField, countLabel, buildingList, sortOrder)
+    end,
+    21
+)
+box:add(sortMenu)
+
 -- help button
 box:add(helpButton(contentWidth-4,0,"(?)",function()
     local helpWidth = contentWidth-2
@@ -223,6 +265,7 @@ box:add(helpButton(contentWidth-4,0,"(?)",function()
         "\x7f\x7f\x7f\x7f\x7f\x7f Filter By \x7f\x7f\x7f\x7f\x7f\x7f\x7f\n"..
         " \x04 Name\n"..
         " \x04 Level\n"..
+        " \x04 Style\n"..
         " \x04 #guarded/#unguarded\n"..
         " \x04 #built/#unbuilt\n"..
         " \x04 #construction\n"..
@@ -253,17 +296,17 @@ end
 box.onShow = function(self)
     self.ui.msg="boxOnShow"
     detailView.hidden = true
-    reloadBuildings(colony, filterField, countLabel, buildingList)
+    reloadBuildings(colony, filterField, countLabel, buildingList, sortOrder)
     box:redraw()
 end
 
 box.refresh = function(self)
     if detailView.hidden then
-        reloadBuildings(colony, filterField, countLabel, buildingList)
+        reloadBuildings(colony, filterField, countLabel, buildingList, sortOrder)
     end
 end
 
-reloadBuildings(colony, filterField, countLabel, buildingList)
+reloadBuildings(colony, filterField, countLabel, buildingList, sortOrder)
 
 return box
 

@@ -278,8 +278,15 @@ function sortListBy(list, sortKey, ascending)
                 return a[sortKey] > b[sortKey]
             end)
         end
-    else
-        error("Can't sort by " .. type(sortKey))
+    elseif sortKey == nil and not ascending then
+        -- invert order
+        local newList = {}
+        for i = #list, 1, -1 do
+            table.insert(newList, table.remove(list, i))
+        end
+        for i = 1, #newList do
+            table.insert(list, newList[i])
+        end
     end
 end
 
