@@ -140,13 +140,14 @@ function List:onMouseDown(x, y, button)
         local item = nil
         if index <= #self.items then
             item = self.items[index]
-            self.selected = index
+            if item.selectable == false then
+                self.selected = nil
+                item = nil
+            else
+                self.selected = index
+            end
         else
             self.selected = nil
-        end
-        if item.selectable == false then
-            self.selected = nil
-            item = nil
         end
         self:onSelect(self.selected, item)
     elseif self.onLink then
