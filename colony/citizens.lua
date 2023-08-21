@@ -3,7 +3,7 @@ require("colony/utils")
 
 local function formatHappiness(value, format)
     if format == "X" and value == 10.0 then
-        return "{blue}\x02"
+        return "{purple}\x02"
     end
     return string.format("{%s}%" .. format, getRateColor(value / 10.0), value)
 end
@@ -49,7 +49,7 @@ local function citizenRow(citizen, width)
         local job = formatWork(citizen.work, width - 2 - UI.strlen(ageIcon))
         local jobPrefix = " "
         if hasBestJob(citizen) then
-            jobPrefix = "{green}\x03{fg}"
+            jobPrefix = "{blue}\x03{fg}"
         end
         line2 = jobPrefix .. job .. string.rep(" ", width - 1 - string.len(job) - UI.strlen(ageIcon)) .. ageIcon
         table.insert(tags, jobName)
@@ -312,13 +312,13 @@ box:add(helpButton(contentWidth-4,0,"(?)",function()
         x=1,y=0,w=helpWidth-2,h=helpHeight,bg=colors.lightGray,fg=colors.black,text=
         "\x7f\x7f\x7f\x7f Citizen Row \x7f\x7f\x7f\x7f\x7f\n"..
         "{bg=lightBlue}Citizen Name       {red}1{blue}2{gray}3{bg=bg}\n" ..
-        "{bg=lightBlue}{green}\x03{black}Job & Level          {bg=bg}\n" ..
+        "{bg=lightBlue}{blue}\x03{black}Job & Level          {bg=bg}\n" ..
         "1: {red}\x03{fg} Low health\n"..
         "   {red}h{fg} Homeless\n"..
         "   {red}f{fg} Need better food\n"..
-        "2: Happiness: {blue}\x02{fg}=10\n"..
+        "2: Happiness {red}0{gray}\xad{orange}4{gray}\xad{blue}6{gray}\xad{purple}9\x02{fg}\n"..
         "3: {gray}z{fg} Sleeping, {white}-{fg} Idle\n   {blue}w{fg} Working\n"..
-        "{green}\x03{fg}= Has best job\n"..
+        "{blue}\x03{fg}= Has best job\n"..
         "\n"..
         "\x7f\x7f\x7f\x7f\x7f\x7f Filter By \x7f\x7f\x7f\x7f\x7f\x7f\x7f\n"..
         " \x04 Name, Job, Level\n"..

@@ -178,9 +178,9 @@ function getRateColor(rate)
     elseif rate < 0.6 then
         return "orange"
     elseif rate < 0.9 then
-        return "green"
-    else
         return "blue"
+    else
+        return "purple"
     end
 end
 
