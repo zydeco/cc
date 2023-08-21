@@ -201,6 +201,7 @@ function UI:run()
     term.clear()
     while ui.running do
         drawViews(ui, {ui.base}, 0, 0)
+        term.flush()
         showDebugMsg(ui)
         handleField(ui)
         handleEvent(ui)
@@ -214,6 +215,7 @@ function UI:run()
         ui.debug.clear()
     end
     term.setCursorBlink(true)
+    term.flush()
 end
 
 function UI:addTimer(interval, times, action, arg, view)
@@ -230,11 +232,12 @@ function UI:addTimer(interval, times, action, arg, view)
 end
 
 require("ui/components")
+require("ui/term")
 
 function UI.new(term)
     local self = setmetatable({
         running=false,
-        term=term,
+        term=wrapTerm(term),
         timers={},
         keyboardShortcuts={}
     }, {__index=UI})

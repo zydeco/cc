@@ -14,6 +14,7 @@
         "components/checkbox.lua",
         "components/radiobutton.lua",
         "components/menu.lua",
+        "term.lua",
         "text.lua",
         "utils.lua",
     },
