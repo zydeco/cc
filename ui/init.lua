@@ -116,7 +116,7 @@ local function handleEvent(ui)
     if ui.debug and string.sub(event, 1, 6) ~= "_CCPC_" then
         ui.msg = (event or "") .. "," .. tostring(p1) .. "," .. tostring(p2) .. "," .. tostring(p3)
     end
-    if event == "mouse_click" or event == "mouse_up" or event == "monitor_touch" or event == "mouse_scroll" then
+    if event == "mouse_click" or event == "mouse_up" or event == "monitor_touch" or event == "mouse_scroll" or event == "mouse_drag" then
         -- mouse event
         local hit, hitX, hitY = hitTest(ui.base.subviews, p2-1, p3-1)
         if event ~= "mouse_scroll" then
@@ -136,6 +136,8 @@ local function handleEvent(ui)
                 hit.onTouch(hit, hitX, hitY)
             elseif event == "mouse_scroll" and hit.onScroll then
                 hit.onScroll(hit, hitX, hitY, p1) -- direction
+            elseif event == "mouse_drag" and hit.onMouseDrag then
+                hit.onMouseDrag(hit, hitX, hitY, p1)
             end
         end
     elseif event == "timer" and ui.timers[p1] then

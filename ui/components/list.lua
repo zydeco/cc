@@ -102,25 +102,37 @@ function List:draw(term, dx, dy)
     end
 end
 
+local function handleScrollBarClick(self, y)
+    self:redraw()
+    if y == 0 then
+        self:scrollUp()
+    elseif y == self.h - 1 then
+        self:scrollDown()
+    elseif y == 1 then
+        self.scrollIndex = 1
+    elseif y == self.h - 2 then
+        self.scrollIndex = self.maxScroll
+    else
+        local barSize = self.h - 2
+        self.scrollIndex = math.ceil(self.maxScroll * ((y - 1) / barSize))
+    end
+end
+
+function List:onMouseDrag(x, y, button)
+    if button ~= 1 then
+        return
+    end
+    if x == self.w - 1 then
+        handleScrollBarClick(self, y)
+    end
+end
+
 function List:onMouseDown(x, y, button)
     if button ~= 1 then
         return
     end
     if x == self.w - 1 then
-        -- scroll bar
-        self:redraw()
-        if y == 0 then
-            self:scrollUp()
-        elseif y == self.h - 1 then
-            self:scrollDown()
-        elseif y == 1 then
-            self.scrollIndex = 1
-        elseif y == self.h - 2 then
-            self.scrollIndex = self.maxScroll
-        else
-            local barSize = self.h - 2
-            self.scrollIndex = math.ceil(self.maxScroll * ((y - 1) / barSize))
-        end
+        handleScrollBarClick(self, y)
     elseif self.onSelect then
         -- select item
         self:redraw()
