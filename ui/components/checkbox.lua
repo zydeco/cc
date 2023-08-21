@@ -15,7 +15,7 @@ function Checkbox.new(arg)
     self.checked = arg.checked or false
     self.fg = arg.fg or colors.black
     self.onChange = arg.onChange
-    self.checkSign = arg.checkSign or "#"
+    self.checkSign = arg.checkSign or "\xd7"
 
     self.toggle = function(self)
         self.checked = not self.checked

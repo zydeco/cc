@@ -15,7 +15,7 @@ function RadioButton.new(arg)
     self.checked = arg.checked or false
     self.fg = arg.fg or colors.black
     self.onChange = arg.onChange
-    self.checkSign = arg.checkSign or "@"
+    self.checkSign = arg.checkSign or "\x07"
     self.group = arg.group
     self.value = arg.value
 
