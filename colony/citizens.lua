@@ -68,7 +68,7 @@ local function citizenRow(citizen, width)
     }
 end
 
-local function reloadCitizens(colony, filterField, countLabel, citizenList)
+local function reloadCitizens(colony, filterField, countLabel, citizenList, sortOrder)
     local filterText = string.lower(filterField.text or "")
     local rowWidth = citizenList.w
     local visibleCitizens = filter(colony.getCitizens(), function(citizen)
@@ -78,6 +78,7 @@ local function reloadCitizens(colony, filterField, countLabel, citizenList)
     if hasScrollBar then
         rowWidth = citizenList.w - 2
     end
+    sortListBy(visibleCitizens, sortOrder.by, sortOrder.ascending)
     citizenList.items = map(visibleCitizens, function(citizen)
         return citizenRow(citizen, rowWidth)
     end)
@@ -264,6 +265,42 @@ local citizenList = UI.List.new{
 }
 box:add(citizenList)
 
+-- sorting
+local sortOrder = {
+    ascending = true
+}
+local sortMenu = makeSortMenu(
+    sortOrder,
+    {
+        { text="ID", sortKey = "id" },
+        { text="Name", sortKey = "name" },
+        { text="Health", sortKey = "health" },
+        { text="Happiness", sortKey = "happiness" },
+        { text="Job", sortKey = function(citizen)
+            if citizen.work then
+                return translate(citizen.work.job or citizen.work.name)
+            else
+                return ""
+            end
+        end},
+        { text="Level", sortKey = function(citizen)
+            if citizen.work then
+                return citizen.work.level
+            else
+                return 0
+            end
+        end},
+        { text="Age", sortKey = "age" },
+        { text="State", sortKey = "state" },
+    },
+    function()
+        reloadCitizens(colony, filterField, countLabel, citizenList, sortOrder)
+        citizenList:redraw()
+    end,
+    21
+)
+box:add(sortMenu)
+
 -- help button
 box:add(helpButton(contentWidth-4,0,"(?)",function()
     local helpWidth = contentWidth-2
@@ -330,17 +367,17 @@ end
 box.onShow = function(self)
     self.ui.msg="boxOnShow"
     detailView.hidden = true
-    reloadCitizens(colony, filterField, countLabel, citizenList)
+    reloadCitizens(colony, filterField, countLabel, citizenList, sortOrder)
     box:redraw()
 end
 
 box.refresh = function(self)
     if detailView.hidden then
-        reloadCitizens(colony, filterField, countLabel, citizenList)
+        reloadCitizens(colony, filterField, countLabel, citizenList, sortOrder)
     end
 end
 
-reloadCitizens(colony, filterField, countLabel, citizenList)
+reloadCitizens(colony, filterField, countLabel, citizenList, sortOrder)
 
 return box
 end

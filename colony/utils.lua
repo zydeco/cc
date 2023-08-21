@@ -252,3 +252,79 @@ function helpButton(x, y, text, helpViewProvider, viewToHide)
     }
     return btn
 end
+
+--- Sorts a list by applying a function
+--- @param list table List to sort
+--- @param sortKey function|string Key to sort by
+--- @param ascending boolean Whether to sort ascending or descending
+function sortListBy(list, sortKey, ascending)
+    if type(sortKey) == "function" then
+        if ascending then
+            table.sort(list, function(a, b)
+                return sortKey(a) < sortKey(b)
+            end)
+        else
+            table.sort(list, function(a, b)
+                return sortKey(a) > sortKey(b)
+            end)
+        end
+    elseif type(sortKey) == "string" then
+        if ascending then
+            table.sort(list, function(a, b)
+                return a[sortKey] < b[sortKey]
+            end)
+        else
+            table.sort(list, function(a, b)
+                return a[sortKey] > b[sortKey]
+            end)
+        end
+    else
+        error("Can't sort by " .. type(sortKey))
+    end
+end
+
+function makeSortMenu(sortOrder, sortItems, reloadFunction, maxWidth, prefix)
+    table.insert(sortItems, 1, {
+        text="Ascending", marked=sortOrder.ascending
+    })
+    table.insert(sortItems, 2, {})
+    sortOrder.by = sortItems[3].sortKey
+    sortOrder.name = sortItems[3].text
+    sortItems[3].marked = true
+    prefix = prefix or "Sort: "
+    local maxLabel = 4
+    for i = 3, #sortItems do
+        maxLabel = math.max(maxLabel, string.len(sortItems[i].text))
+    end
+    local width = math.min(maxWidth, string.len(prefix) + 2 + maxLabel)
+    local sortMenu = UI.Menu.new{
+        x=1, y=0, w=width, text=prefix .. "\x1e " .. sortOrder.name,
+        items = sortItems,
+        fg = colors.black,
+        bg = colors.white,
+        menuBg = colors.yellow,
+    }
+    sortMenu.onSelect = function(self, index, item)
+        if index == 1 then
+            -- toggle ascending/descending
+            sortOrder.ascending = not sortOrder.ascending
+            item.marked = sortOrder.ascending
+        elseif not item.marked then
+            -- sort by this
+            for i = 3, #sortItems do
+                sortItems[i].marked = false
+            end
+            item.marked = true
+            sortOrder.name = item.text
+            sortOrder.by = item.sortKey
+        end
+        -- update name
+        if sortOrder.ascending then
+            sortMenu.text = prefix .. "\x1e " .. sortOrder.name
+        else
+            sortMenu.text = prefix .. "\x1f " .. sortOrder.name
+        end
+        reloadFunction()
+    end
+    return sortMenu
+end
