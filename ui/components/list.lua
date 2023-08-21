@@ -21,6 +21,11 @@ function List.new(arg)
     self.fgSelected = arg.fgSelected or colors.white
     self.scrollIndex = 1 -- first item displayed
     self.selected = nil
+    if arg.showsSelection ~= nil then
+        self.showsSelection = arg.showsSelection
+    else
+        self.showsSelection = true
+    end
     return self
 end
 
@@ -60,7 +65,7 @@ function List:draw(term, dx, dy)
         local textLines = textLinesForItem(item)
         local text = (textLines[1 + y % rowHeight] or "") -- .. pad
         term.setCursorPos(self.x + dx, self.y + dy + y)
-        if index == self.selected then
+        if index == self.selected and self.showsSelection then
             fg = self.fgSelected
             bg = self.bgSelected
         else
