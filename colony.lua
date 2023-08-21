@@ -13,6 +13,41 @@ else
     end
 end
 
+local function wrapColony(colonyIntegrator)
+    local wrapper = {}
+
+    local function wrappedCall(originalFunction, defaultValue)
+        return function()
+            local result = defaultValue
+            pcall(function()
+                result = originalFunction()
+            end)
+            return result
+        end
+    end
+
+    wrapper.getColonyName = wrappedCall(colonyIntegrator.getColonyName, "{red}No colony")
+    wrapper.getHappiness = wrappedCall(colonyIntegrator.getHappiness, 0.0)
+    wrapper.getCitizens = wrappedCall(colonyIntegrator.getCitizens, {})
+    wrapper.amountOfCitizens = wrappedCall(colonyIntegrator.amountOfCitizens, 0)
+    wrapper.maxOfCitizens = wrappedCall(colonyIntegrator.maxOfCitizens, 0)
+    wrapper.getVisitors = wrappedCall(colonyIntegrator.getVisitors, {})
+    wrapper.getBuildings = wrappedCall(colonyIntegrator.getBuildings, {})
+    wrapper.getWorkOrders = wrappedCall(colonyIntegrator.getWorkOrders, {})
+
+    wrapper.getWorkOrderResources = function(orderId)
+        local result = {}
+        pcall(function()
+            result = colonyIntegrator.getWorkOrderResources(orderId)
+        end)
+        return result
+    end
+
+    return wrapper
+end
+
+colony = wrapColony(colony)
+
 local screen = window.create(term.current(), 1,1,26,20)
 local tw,th = term.current().getSize()
 local w,h = screen.getSize()
