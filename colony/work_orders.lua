@@ -86,7 +86,7 @@ local function currentOrderIdForBuilder(builder, allOrders)
     return ordersForBuilder[1].id
 end
 
-local function reloadWorkOrders(colony, filterField, countLabel, orderList)
+local function reloadWorkOrders(colony, filterField, countLabel, orderList, sortOrder)
     local filterText = string.lower(filterField.text or "")
     local allOrders = colony.getWorkOrders()
     local orders = filter(allOrders, function(order)
@@ -96,6 +96,7 @@ local function reloadWorkOrders(colony, filterField, countLabel, orderList)
     local visibleOrders = filter(orders, function(order)
         return shouldShowRow(orderRow(order, colony), filterText)
     end)
+    sortListBy(visibleOrders, sortOrder.by, sortOrder.ascending)
     orderList.items = map(visibleOrders, function(order)
         local isCurrentWorkOrder = currentOrderIdForBuilder(order.builder, allOrders) == order.id
         return orderRow(order, colony, isCurrentWorkOrder)
@@ -107,15 +108,14 @@ local function reloadWorkOrders(colony, filterField, countLabel, orderList)
 end
 
 return function(colony, contentWidth, contentHeight)
-
     local box = UI.Box.new{
         x=0,y=0,w=contentWidth,h=contentHeight,bg=colors.white
     }
-    
+
     -- sizes
     local margin = 1
     local innerWidth = contentWidth - (2*margin)
-    
+
     -- filter
     local filterField = UI.Field.new{
         x=margin, y=1, w=innerWidth - 5, h=1,
@@ -129,7 +129,7 @@ return function(colony, contentWidth, contentHeight)
         end
     }
     box:add(filterField)
-    
+
     local countLabel = UI.Label.new{
         x=margin + innerWidth - 5, y=1, w=5, h=1,
         bg=colors.lightGray, fg=colors.gray,
@@ -145,6 +145,25 @@ return function(colony, contentWidth, contentHeight)
         items={}, rowHeight=3
     }
     box:add(orderList)
+
+    -- sorting
+    local sortOrder = {
+        ascending = true
+    }
+    local sortMenu = makeSortMenu(
+        sortOrder,
+        {
+            { text="ID", sortKey = "id" },
+            { text="Name", sortKey = "buildingName" },
+            { text="Type", sortKey = "workOrderType"},
+            { text="Target Level", sortKey = "targetLevel" },
+        },
+        function()
+            reloadWorkOrders(colony, filterField, countLabel, orderList, sortOrder)
+        end,
+        21
+    )
+    box:add(sortMenu)
 
     -- help button
     box:add(helpButton(contentWidth-4,0,"(?)",function()
@@ -183,27 +202,26 @@ return function(colony, contentWidth, contentHeight)
         items={}
     }
     box:add(detailView)
-    
+
     --detailView.onLink = ...
-    
+
     --orderList.onSelect = function(self, index, item)
     --    showDetailForOrder(detailView, item)
     --end
-    
+
     box.onShow = function(self)
         detailView.hidden = true
-        reloadWorkOrders(colony, filterField, countLabel, orderList)
+        reloadWorkOrders(colony, filterField, countLabel, orderList, sortOrder)
         box:redraw()
     end
-    
+
     box.refresh = function(self)
         if detailView.hidden then
-            reloadWorkOrders(colony, filterField, countLabel, orderList)
+            reloadWorkOrders(colony, filterField, countLabel, orderList, sortOrder)
         end
     end
-    
-    reloadWorkOrders(colony, filterField, countLabel, orderList)
-    
+
+    reloadWorkOrders(colony, filterField, countLabel, orderList, sortOrder)
+
     return box
-    end
-    
+end
