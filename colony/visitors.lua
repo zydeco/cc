@@ -104,7 +104,7 @@ box:add(countLabel)
 -- list
 local visitorList = UI.List.new{
     x=margin, y=2, w=innerWidth, h=contentHeight - 3,
-    fg=colors.black, bg=colors.lightBlue, bgAlternate=colors.lightGray, bgSelected=colors.blue,
+    fg=colors.black, bg=colors.lightBlue, bgAlternate=colors.lightGray, showsSelection=false,
     items={}, rowHeight=3
 }
 box:add(visitorList)
@@ -147,7 +147,9 @@ box:add(detailView)
 --detailView.onLink = ...
 
 visitorList.onSelect = function(self, index, item)
-    showDetailForVisitor(detailView, item.visitor, colony.getVisitors())
+    if item ~= nil then
+        showDetailForVisitor(detailView, item.visitor, colony.getVisitors())
+    end
 end
 
 box.onShow = function(self)

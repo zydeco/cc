@@ -259,7 +259,7 @@ box:add(countLabel)
 -- list
 local citizenList = UI.List.new{
     x=margin, y=2, w=innerWidth, h=contentHeight - 3,
-    fg=colors.black, bg=colors.lightBlue, bgAlternate=colors.lightGray, bgSelected=colors.blue,
+    fg=colors.black, bg=colors.lightBlue, bgAlternate=colors.lightGray, showsSelection=false,
     items={}, rowHeight=2
 }
 box:add(citizenList)
@@ -322,7 +322,9 @@ detailView.onLink = function(self, link)
 end
 
 citizenList.onSelect = function(self, index, item)
-    showDetailForCitizen(detailView, item.citizen, colony.getCitizens(), false, false)
+    if item ~= nil then
+        showDetailForCitizen(detailView, item.citizen, colony.getCitizens())
+    end
 end
 
 box.onShow = function(self)

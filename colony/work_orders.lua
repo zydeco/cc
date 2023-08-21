@@ -141,7 +141,7 @@ return function(colony, contentWidth, contentHeight)
     -- list
     local orderList = UI.List.new{
         x=margin, y=2, w=innerWidth, h=contentHeight - 3,
-        fg=colors.black, bg=colors.lightBlue, bgAlternate=colors.lightGray, bgSelected=colors.blue,
+        fg=colors.black, bg=colors.lightBlue, bgAlternate=colors.lightGray, showsSelection=false,
         items={}, rowHeight=3
     }
     box:add(orderList)
