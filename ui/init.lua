@@ -123,8 +123,9 @@ local function handleEvent(ui)
             ui.keyHandler = nil
             ui.keysDown = {}
         end
+        local hideMenu = false
         if event == "mouse_click" and ui._menu and hit ~= ui._menu then
-            ui:hideMenu()
+            hideMenu = true
         end
         if hit then
             -- onEVENT(self, x, y, ...)
@@ -139,6 +140,9 @@ local function handleEvent(ui)
             elseif event == "mouse_drag" and hit.onMouseDrag then
                 hit.onMouseDrag(hit, hitX, hitY, p1)
             end
+        end
+        if hideMenu then
+            ui:hideMenu()
         end
     elseif event == "timer" and ui.timers[p1] then
         local timer = ui.timers[p1]
