@@ -43,7 +43,9 @@ local function showMenu(self)
                 return { text=separator, selectable=false }
             end
         end),
-        fg=self.fg, bg=self.bg, bgAlternate=self.bg,
+        fg=self.fg or self.menuTextColor,
+        bg=self.menuBg or self.bg,
+        bgAlternate=self.menuBgAlternate or self.bg,
         fgSelected=self.bg, bgSelected=self.fg
     }
     self._menuView.onSelect = function(list, x, y)
@@ -87,6 +89,9 @@ function Menu.new(arg)
         hidden=arg.hidden,
     }), {__index=Menu})
     self.items = arg.items or {}
+    self.menuBg = arg.menuBg
+    self.menuBgAlternate = arg.menuBgAlternate or arg.menuBg
+    self.menuTextColor = arg.menuTextColor
     self.onSelect = arg.onSelect or function() end
     self.onMouseDown = onMouseDown
     return self
