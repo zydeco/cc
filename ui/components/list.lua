@@ -175,7 +175,7 @@ function List:scrollUp()
     self.scrollIndex = math.max(1, self.scrollIndex - 1)
 end
 
-function List:onScroll(direction)
+function List:onScroll(x, y, direction)
     if direction == -1 then
         self:scrollUp()
     elseif  direction == 1 then
