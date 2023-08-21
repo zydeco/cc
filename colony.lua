@@ -143,6 +143,5 @@ ui:registerKeyboardShortcut({keys.q}, function() tabBar:selectTab(5) end)
 ui:registerKeyboardShortcut({keys.w}, function() tabBar:selectTab(6) end)
 ui:registerKeyboardShortcut({keys.r}, function() tabBar:selectTab(7) end)
 ui:registerKeyboardShortcut({keys.m}, function() tabBar:selectTab(8) end)
-ui:registerKeyboardShortcut({keys.e}, function() error("shortcut") end)
 
 ui:run()
