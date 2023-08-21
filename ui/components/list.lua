@@ -114,7 +114,7 @@ function List:onMouseDown(x, y, button)
             self.scrollIndex = self.maxScroll
         else
             local barSize = self.h - 2
-            self.scrollIndex = math.floor(self.maxScroll * (y / barSize))
+            self.scrollIndex = math.ceil(self.maxScroll * ((y - 1) / barSize))
         end
     elseif self.onSelect then
         -- select item
