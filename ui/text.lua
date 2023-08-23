@@ -163,6 +163,25 @@ function UI.textLines(str)
     return lines
 end
 
+function UI.breakPlainTextLines(str, width, indent)
+    local result = ""
+    local line = indent or ""
+    for word in string.gmatch(str, "[%S]+") do
+        if string.len(line) + string.len(word) > width then
+            -- new line
+            result = result .. "\n" .. string.sub(line, 1, string.len(line)-1)
+            line = (indent or "") .. word .. " "
+        else
+            -- continue line
+            line = line .. word .. " "
+        end
+    end
+    if line ~= "" then
+        result = result .. "\n" .. string.sub(line, 1, string.len(line)-1)
+    end
+    return result
+end
+
 function UI.textTagAt(str, width, align, tagName, col)
     local items = stringTags(str, UI_TEXT_DEFAULT_TAG)
     local length = styledLength(items)

@@ -80,6 +80,7 @@ return {
     ["com.minecolonies.building.mysticalsite"] = "Mystical Site",
     ["com.minecolonies.building.netherworker"] = "Nether Mine",
     ["com.minecolonies.building.plantation"] = "Plantation",
+    ["com.minecolonies.building.postbox"] = "Postbox",
     ["com.minecolonies.building.rabbithutch"] = "Rabbit Hutch",
     ["com.minecolonies.building.residence"] = "Residence",
     ["com.minecolonies.building.sawmill"] = "Sawmill",
