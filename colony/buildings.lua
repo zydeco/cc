@@ -50,13 +50,13 @@ local function buildingRow(building, width)
         status = status .. " "
     end
     if building.guarded then
-        status = status .. "{green}G"
+        status = status .. "{blue}G"
     else
         status = status .. "{red}g"
         guardedFlag = "#unguarded"
     end
     if building.built then
-        status = status .. "{green}B"
+        status = status .. "{blue}B"
     else
         status = status .. "{white}b"
         builtFlag = "#unbuilt"
@@ -257,11 +257,11 @@ box:add(helpButton(contentWidth-4,0,"(?)",function()
         x=1,y=0,w=helpWidth-2,h=helpHeight,bg=colors.lightGray,fg=colors.black,text=
         "\x7f\x7f\x7f\x7f Building Row \x7f\x7f\x7f\x7f\n"..
         " \n"..
-        "{bg=lightBlue}Building Name      {orange}W{green}G{green}B{bg=bg}\n" ..
+        "{bg=lightBlue}Building Name      {orange}W{blue}G{blue}B{bg=bg}\n" ..
         "{bg=lightBlue} Location    Occupancy{bg=bg}\n" ..
         " {orange}{bg=lightBlue}W{fg}{bg=bg} Construction\n"..
-        " {green}{bg=lightBlue}G{fg}/{red}g{fg}{bg=bg} Guarded/unguarded\n"..
-        " {green}{bg=lightBlue}B{fg}/{white}b{fg}{bg=bg} Built/not built\n"..
+        " {blue}{bg=lightBlue}G{fg}/{red}g{fg}{bg=bg} Guarded/unguarded\n"..
+        " {blue}{bg=lightBlue}B{fg}/{white}b{fg}{bg=bg} Built/not built\n"..
         "\n"..
         "\x7f\x7f\x7f\x7f\x7f\x7f Filter By \x7f\x7f\x7f\x7f\x7f\x7f\x7f\n"..
         " \x04 Name\n"..
