@@ -43,7 +43,7 @@ local function citizenRow(citizen, width)
     if citizen.age ~= "adult" then
         ageIcon = "{gray}" .. citizen.age
     end
-    local tags = {citizen.name, "#" .. citizen.age}
+    local tags = {citizen.name, "#" .. citizen.age, "#" .. citizen.gender}
     if citizen.work then
         local jobName = translate(citizen.work.job or citizen.work.name)
         local job = formatWork(citizen.work, width - 2 - UI.strlen(ageIcon))
