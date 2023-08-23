@@ -291,7 +291,13 @@ local sortMenu = makeSortMenu(
                 return 0
             end
         end},
-        { text="Age", sortKey = "age" },
+        { text="Age", sortKey = function(citizen)
+            if citizen.age == "adult" then
+                return 36
+            else
+                return 10
+            end
+        end},
         { text="State", sortKey = "state" },
     },
     function()
