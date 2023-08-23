@@ -1,16 +1,21 @@
 require("colony/jobs")
 require("colony/utils")
 
+local function getRecruitCostItemName(recruitCost)
+    return string.gsub(string.gsub(recruitCost.displayName, "^ +", ""), "[%[%]]", "")
+end
+
 local function visitorRow(visitor)
     -- name & happiness
-    local line1 = visitor.name
+    local line1 = visitor.name .. " " .. formatGender(visitor.gender)
 
     -- recruit cost
-    local itemName =  string.gsub(string.gsub(visitor.recruitCost.displayName, "^ +", ""), "[%[%]]", "")
+    local itemName = getRecruitCostItemName(visitor.recruitCost)
     local line2 = string.format(" %d{gray}x{fg}%s", visitor.recruitCost.count, itemName)
 
     local tags = {
         visitor.name,
+        "#" .. visitor.gender,
         itemName, 
         "" .. visitor.recruitCost.count
     }
@@ -47,9 +52,11 @@ local function reloadVisitors(colony, filterField, countLabel, visitorList)
 end
 
 local function detailForVisitor(visitor)
+    local itemName = getRecruitCostItemName(visitor.recruitCost)
     local lines = {
-        "{align=center}" .. visitor.name,
-        "{align=center}{gray}" .. visitor.age .. " " .. visitor.gender,
+        "{align=center}" .. visitor.name .. " " .. formatGender(visitor.gender),
+        string.format("{align=center}%d{gray}x{fg}%s", visitor.recruitCost.count, itemName),
+        "{align=center}{gray}" .. formatPos(visitor.location),
         "",
         "  Best jobs:"
     }
@@ -131,6 +138,7 @@ box:add(helpButton(contentWidth-4,0,"(?)",function()
         " \x04 Recruit cost item\n"..
         " \x04 Recruit cost amount\n"..
         " \x04 Preferred job\n"..
+        " \x04 #male, #female\n" ..
         ""
     }
     container:add(helpText)

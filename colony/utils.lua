@@ -168,6 +168,16 @@ function formatWithLevel(name, level, width)
     return name .. " " .. level
 end
 
+function formatGender(gender)
+    if gender == "female" then
+        return "\x0c"
+    elseif gender == "male" then
+        return "\x0b"
+    else
+        return "\x0f"
+    end
+end
+
 function formatBuilding(building, width)
     return formatWithLevel(translate(building.name or ("com.minecolonies.building." .. building.type)), building.level, width)
 end
