@@ -76,7 +76,7 @@ local function reloadCitizens(colony, filterField, countLabel, citizenList, sort
     end)
     local hasScrollBar = (#visibleCitizens * citizenList.rowHeight) > citizenList.h
     if hasScrollBar then
-        rowWidth = citizenList.w - 2
+        rowWidth = citizenList.w - 1
     end
     sortListBy(visibleCitizens, sortOrder.by, sortOrder.ascending)
     citizenList.items = map(visibleCitizens, function(citizen)

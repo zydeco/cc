@@ -104,7 +104,7 @@ local function reloadBuildings(colony, filterField, countLabel, buildingList, so
     sortListBy(visibleBuildings, sortOrder.by, sortOrder.ascending)
     local hasScrollBar = (#visibleBuildings * buildingList.rowHeight) > buildingList.h
     if hasScrollBar then
-        rowWidth = buildingList.w - 2
+        rowWidth = buildingList.w - 1
     end
     buildingList.items = map(visibleBuildings, function(building)
         return buildingRow(building, rowWidth)

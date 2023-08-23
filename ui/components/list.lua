@@ -55,7 +55,7 @@ function List:draw(term, dx, dy)
     local needBar = contentHeight > self.h
     local contentWidth = self.w
     if needBar then
-        contentWidth = contentWidth - 2
+        contentWidth = contentWidth - 1
     end
     local bg = self.bg
     local fg = self.fg
@@ -96,8 +96,8 @@ function List:draw(term, dx, dy)
 
             term.setTextColor(self.fg)
             term.setBackgroundColor(bg)
-            term.setCursorPos(self.x + dx + self.w - 2, self.y + dy + y)
-            term.write(" " .. bar)
+            term.setCursorPos(self.x + dx + self.w - 1, self.y + dy + y)
+            term.write(bar)
         end
     end
 end
