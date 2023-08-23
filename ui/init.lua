@@ -41,8 +41,7 @@ local function hasView(views, target)
     return false
 end
 
-local function drawViews(ui, views, dx, dy, drawAll)
-    local term = ui.term
+local function drawViews(term, views, dx, dy, drawAll)
     local isAfterDirty = drawAll or false
     for i=1,#views do
         local view = views[i]
@@ -59,7 +58,7 @@ local function drawViews(ui, views, dx, dy, drawAll)
                 isAfterDirty = true
             end
             -- draw subviews
-            drawViews(ui, view.subviews or {}, view.x + dx, view.y + dy, isAfterDirty)
+            drawViews(term, view.subviews or {}, view.x + dx, view.y + dy, isAfterDirty)
         end
     end
 end
@@ -118,7 +117,15 @@ local function handleEvent(ui)
     end
     if event == "mouse_click" or event == "mouse_up" or event == "monitor_touch" or event == "mouse_scroll" or event == "mouse_drag" then
         -- mouse event
-        local hit, hitX, hitY = hitTest(ui.base.subviews, p2-1, p3-1)
+        local subviews = {}
+        if event == "monitor_touch" then
+            -- touch event on a monitor
+            subviews = ui.monitors[p1].base.subviews
+        else
+            -- actual mouse event - use main screen
+            subviews = ui.base.subviews
+        end
+        local hit, hitX, hitY = hitTest(subviews, p2-1, p3-1)
         if event ~= "mouse_scroll" then
             ui.keyHandler = nil
             ui.keysDown = {}
@@ -134,7 +141,7 @@ local function handleEvent(ui)
             elseif event == "mouse_up" and hit.onMouseUp then
                 hit.onMouseUp(hit, hitX, hitY, p1)
             elseif event == "monitor_touch" and hit.onTouch then
-                hit.onTouch(hit, hitX, hitY)
+                hit.onTouch(hit, hitX, hitY, p1) -- monitor
             elseif event == "mouse_scroll" and hit.onScroll then
                 hit.onScroll(hit, hitX, hitY, p1) -- direction
             elseif event == "mouse_drag" and hit.onMouseDrag then
@@ -194,6 +201,27 @@ local function handleField(ui)
     end
 end
 
+local function drawAllViews(ui)
+    -- draw base
+    drawViews(ui.term, {ui.base}, 0, 0)
+    ui.term.flush()
+    -- draw monitors
+    for _, monitor in pairs(ui.monitors) do
+        drawViews(monitor.term, {monitor.base}, 0, 0)
+        monitor.term.flush()
+    end
+end
+
+local function clearScreen(term)
+    term.setBackgroundColor(colors.black)
+    term.setTextColor(colors.white)
+    term.setCursorPos(1,1)
+    term.clear()
+    if term.flush then
+        term.flush()
+    end
+end
+
 function UI:run()
     local ui = self
     if self == nil then error("nil self") end
@@ -202,26 +230,22 @@ function UI:run()
     ui.running = true
     ui.msg = "started"
     ui.keysDown = {}
-    term.setBackgroundColor(colors.white)
-    term.setTextColor(colors.black)
-    term.clear()
+    clearScreen(term)
     while ui.running do
-        drawViews(ui, {ui.base}, 0, 0)
-        term.flush()
+        drawAllViews(ui)
         showDebugMsg(ui)
         handleField(ui)
         handleEvent(ui)
         handleField(ui)
     end
-    term.setBackgroundColor(colors.black)
-    term.setTextColor(colors.white)
-    term.setCursorPos(1,1)
-    term.clear()
+    clearScreen(term)
+    for side, monitor in pairs(ui.monitors) do
+        clearScreen(monitor.term)
+    end
     if type(ui.debug) == "table" then
         ui.debug.clear()
     end
     term.setCursorBlink(true)
-    term.flush()
 end
 
 function UI:addTimer(interval, times, action, arg, view)
@@ -245,12 +269,29 @@ function UI.new(term)
         running=false,
         term=wrapTerm(term),
         timers={},
-        keyboardShortcuts={}
+        keyboardShortcuts={},
+        monitors={}
     }, {__index=UI})
     local w, h = term.getSize()
     self.base = UI.Box.new{x=1, y=1, w=w, h=h, bg=colors.white}
     self.base.ui = self
     return self
+end
+
+function UI:attachMonitor(side, textScale)
+    local monitor = peripheral.wrap(side)
+    if textScale ~= nil then
+        monitor.setTextScale(textScale)
+    end
+    local w,h = monitor.getSize()
+    local base = UI.Box.new{x=1, y=1, w=w, h=h, bg=colors.white}
+    base.ui = self
+    self.monitors[side] = {
+        base=base,
+        term=wrapTerm(monitor)
+    }
+    clearScreen(monitor)
+    return base
 end
 
 function UI:add(subview)
@@ -261,8 +302,8 @@ function UI:stop()
     self.running = false
 end
 
-function UI:showMenu(menu)
-    self.base:add(menu)
+function UI:showMenu(menu, rootView)
+    (rootView or self.base):add(menu)
     self._menu=menu
 end
 

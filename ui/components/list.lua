@@ -127,6 +127,10 @@ function List:onMouseDrag(x, y, button)
     end
 end
 
+function List:onTouch(x, y)
+    self:onMouseDown(x, y, 1)
+end
+
 function List:onMouseDown(x, y, button)
     if button ~= 1 then
         return

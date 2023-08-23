@@ -6,10 +6,10 @@ Menu.__index = Menu
 
 require("ui/utils")
 
-local function calcMenuSize(self)
+local function calcMenuSize(self, rootView)
     local width = self.w
-    local maxWidth = self.ui.base.w - self.abs.x + 1
-    local maxHeight = self.ui.base.h - self.abs.y
+    local maxWidth = rootView.w - self.abs.x + 1
+    local maxHeight = rootView.h - self.abs.y
     for i = 1, #self.items do
         local item = self.items[i]
         local itemWidth = UI.strlen(item.text or "") + 2
@@ -31,8 +31,8 @@ local function itemPrefix(item)
     end
 end
 
-local function showMenu(self)
-    local w,h = calcMenuSize(self)
+local function showMenu(self, rootView)
+    local w,h = calcMenuSize(self, rootView)
     local separator = string.rep("\x8c", w)
     self._menuView = List.new{
         x=self.abs.x-1, y=self.abs.y, w=w, h=h, items=UI.map(self.items, function(item)
@@ -51,7 +51,7 @@ local function showMenu(self)
     self._menuView.onSelect = function(list, x, y)
         -- implement onSelect to make list selectable
     end
-    self._menuView.onMouseUp = function(list, x,y)
+    self._menuView.onMouseUp = function(list, x, y)
         local index = y+1
         local item = self.items[index]
         if item.onSelect then
@@ -62,16 +62,25 @@ local function showMenu(self)
             hideMenu(self)
         end
     end
-    self.ui:showMenu(self._menuView)
+    self._menuView.onTouch = self._menuView.onMouseUp
+    self.ui:showMenu(self._menuView, rootView)
 end
 
 local function onMouseDown(self, x, y, button)
     if button == 1 then
         if self._menuView == nil or self._menuView.parent == nil then
-            showMenu(self)
+            showMenu(self, self.ui.base)
         else
             hideMenu(self)
         end
+    end
+end
+
+local function onTouch(self, x, y, monitor)
+    if self._menuView == nil or self._menuView.parent == nil then
+        showMenu(self, self.ui.monitors[monitor].base)
+    else
+        hideMenu(self)
     end
 end
 
@@ -94,6 +103,7 @@ function Menu.new(arg)
     self.menuTextColor = arg.menuTextColor
     self.onSelect = arg.onSelect or function() end
     self.onMouseDown = onMouseDown
+    self.onTouch = onTouch
     return self
 end
 

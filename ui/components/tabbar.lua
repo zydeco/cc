@@ -33,6 +33,7 @@ function TabBar.new(arg)
             self.currentTab:onShow()
         end
     end
+    self.label.onTouch = self.label.onMouseDown
     self.tabs=tabs
 
     -- add content view
