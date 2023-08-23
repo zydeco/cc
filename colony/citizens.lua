@@ -321,7 +321,7 @@ box:add(helpButton(contentWidth-4,0,"(?)",function()
         "3: {gray}z{fg} Sleeping, {white}-{fg} Idle\n   {blue}w{fg} Working\n"..
         "{blue}\x03{fg}= Has best job\n"..
         "\n"..
-        "\x7f\x7f\x7f\x7f\x7f\x7f Filter By \x7f\x7f\x7f\x7f\x7f\x7f\x7f\n"..
+        "\x7f\x7f\x7f\x7f\x7f\x7f Filter By \x7f\x7f\x7f\x7f\x7f\n"..
         " \x04 Name, Job, Level\n"..
         " \x04 #child, #adult\n"..
         " \x04 #homeless\n"..

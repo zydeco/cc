@@ -48,13 +48,22 @@ end
 
 colony = wrapColony(colony)
 
-local screen = window.create(term.current(), 1,1,26,20)
+local screen = term.current()
 local tw,th = term.current().getSize()
 local w,h = screen.getSize()
-local ui = UI.new(screen)
 if th > 20 then
-    ui.debug = window.create(term.current(), 1,21,tw,1)
+    screen = window.create(term.current(), 1,1,tw,th-1)
+    h = th - 1
 end
+local ui = UI.new(screen)
+local base = ui.base
+
+if th > 20 then
+    ui.debug = window.create(term.current(), 1,th,tw,1)
+end
+
+--base = ui:attachMonitor("left", 1.0)
+--w,h = base.w, base.h
 
 require("colony/utils")
 
@@ -65,7 +74,7 @@ local nameLabel = UI.Label.new{
     x=0,y=0,w=w-statusBarWidth,h=1,text=colony.getColonyName(),
     bg=colors.black, fg=colors.white
 }
-ui:add(nameLabel)
+base:add(nameLabel)
 
 -- date/time
 local statusBar = UI.Label.new{
@@ -75,7 +84,8 @@ local statusBar = UI.Label.new{
 statusBar.onMouseUp = function()
     ui:stop()
 end
-ui:add(statusBar)
+statusBar.onTouch = statusBar.onMouseUp
+base:add(statusBar)
 
 -- update every 6 game minutes (5 seconds)
 -- TODO: accurately
@@ -97,7 +107,7 @@ end)
 local contentWidth = w -- 26 on pocket computer
 local contentHeight = h-3 -- 17 on pocket computer
 
-tabBar = UI.TabBar.new{x=0,y=1,w=ui.base.w,h=ui.base.h-1,bg=colors.black, tabs={
+tabBar = UI.TabBar.new{x=0,y=1,w=w,h=h-1,bg=colors.black, tabs={
     {
         bg=colors.lightGray, fg=colors.black,
         key="O", name="Overview",
@@ -139,7 +149,7 @@ tabBar = UI.TabBar.new{x=0,y=1,w=ui.base.w,h=ui.base.h-1,bg=colors.black, tabs={
         content=notImplementedView("Map")
     },
 }}
-ui:add(tabBar)
+base:add(tabBar)
 
 ui:registerKeyboardShortcut({keys.o}, function() tabBar:selectTab(1) end)
 ui:registerKeyboardShortcut({keys.c}, function() tabBar:selectTab(2) end)

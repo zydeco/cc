@@ -263,7 +263,7 @@ box:add(helpButton(contentWidth-4,0,"(?)",function()
         " {blue}{bg=lightBlue}G{fg}/{red}g{fg}{bg=bg} Guarded/unguarded\n"..
         " {blue}{bg=lightBlue}B{fg}/{white}b{fg}{bg=bg} Built/not built\n"..
         "\n"..
-        "\x7f\x7f\x7f\x7f\x7f\x7f Filter By \x7f\x7f\x7f\x7f\x7f\x7f\x7f\n"..
+        "\x7f\x7f\x7f\x7f\x7f\x7f Filter By \x7f\x7f\x7f\x7f\x7f\n"..
         " \x04 Name\n"..
         " \x04 Level\n"..
         " \x04 Style\n"..

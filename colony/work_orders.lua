@@ -184,7 +184,7 @@ return function(colony, contentWidth, contentHeight)
             "  {gray}(queued){fg}\n" ..
             "  {red}!12{fg} needed resources\n" ..
             " \n"..
-            "\x7f\x7f\x7f\x7f\x7f\x7f Filter By \x7f\x7f\x7f\x7f\x7f\x7f\x7f\n"..
+            "\x7f\x7f\x7f\x7f\x7f\x7f Filter By \x7f\x7f\x7f\x7f\x7f\n"..
             " \x04 Building Name\n"..
             " \x04 Type, Target Level\n"..
             " \x04 Builder Name\n"..

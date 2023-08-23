@@ -125,7 +125,7 @@ box:add(helpButton(contentWidth-4,0,"(?)",function()
         "{bg=lightBlue} Recruit cost         {bg=bg}\n" ..
         "{bg=lightBlue} 3 Best jobs          {bg=bg}\n" ..
         " \n"..
-        "\x7f\x7f\x7f\x7f\x7f\x7f Filter By \x7f\x7f\x7f\x7f\x7f\x7f\x7f\n"..
+        "\x7f\x7f\x7f\x7f\x7f\x7f Filter By \x7f\x7f\x7f\x7f\x7f\n"..
         " \n"..
         " \x04 Name\n"..
         " \x04 Recruit cost item\n"..
