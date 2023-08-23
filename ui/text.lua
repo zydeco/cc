@@ -163,9 +163,10 @@ function UI.textLines(str)
     return lines
 end
 
-function UI.breakPlainTextLines(str, width, indent)
+function UI.breakPlainTextLines(str, width, firstIndent, indent)
     local result = ""
-    local line = indent or ""
+    indent = indent or firstIndent
+    local line = firstIndent or ""
     for word in string.gmatch(str, "[%S]+") do
         if string.len(line) + string.len(word) > width then
             -- new line

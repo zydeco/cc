@@ -35,6 +35,7 @@ local function wrapColony(colonyIntegrator)
     wrapper.getBuildings = wrappedCall(colonyIntegrator.getBuildings, {})
     wrapper.getWorkOrders = wrappedCall(colonyIntegrator.getWorkOrders, {})
     wrapper.getRequests = wrappedCall(colonyIntegrator.getRequests, {})
+    wrapper.getResearch = wrappedCall(colonyIntegrator.getResearch, {})
 
     wrapper.getWorkOrderResources = function(orderId)
         local result = {}
@@ -142,7 +143,7 @@ tabBar = UI.TabBar.new{x=0,y=1,w=w,h=h-1,bg=colors.black, tabs={
     {
         bg=colors.pink, fg=colors.black,
         key="R", name="Research",
-        content=notImplementedView("Research")
+        content=require("colony/research")(colony, contentWidth, contentHeight)
     },
     {
         bg=colors.yellow, fg=colors.black,
