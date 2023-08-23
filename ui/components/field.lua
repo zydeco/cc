@@ -67,9 +67,21 @@ function Field:onChar(char)
     self:redraw()
 end
 
+local function shouldShowClearButton(self)
+    return self.text ~= "" and self.clearButton
+end
+
 function Field:onMouseUp(x, y, button)
     if button == 1 then
-        focus(self.ui, self)
+        if shouldShowClearButton(self) and x >= self.w - self.clearButton.w then
+            self.text = ""
+            if self.onChange then
+                self.onChange(self, self.text)
+            end
+            self:redraw()
+        else
+            focus(self.ui, self)
+        end
     end
 end
 
@@ -77,7 +89,8 @@ function Field:draw(term, dx, dy)
     local isActive = self.ui.keyHandler
     local text = self.text
     local fg = self.fg
-    if text == "" then
+    local hasText = text ~= "" and text ~= nil
+    if not hasText then
         -- placeholder
         self.text = self.placeholder.text
         self.fg = self.placeholder.color
@@ -86,6 +99,36 @@ function Field:draw(term, dx, dy)
     -- restore
     self.text = text
     self.fg = fg
+    -- clear button
+    if shouldShowClearButton(self) then
+        local clearButton = self.clearButton
+        term.setCursorPos(self.x + dx + self.w - clearButton.w, self.y + dy)
+        self.ui:drawStyledText(term, clearButton.text, clearButton.bg, clearButton.fg, clearButton.w, UI.LEFT)
+    end
+end
+
+local function initClearButton(arg)
+    local clearButton = {
+        text="[\xd7]",
+        fg=colors.white,
+        bg=colors.red,
+        w=3
+    }
+    if arg == true then
+        -- default everything
+        return clearButton
+    elseif type(arg) == "string" then
+        clearButton.text = arg
+        clearButton.w = string.len(arg)
+        return clearButton
+    elseif type(arg) == "table" then
+        clearButton.text = arg.text or clearButton.text
+        clearButton.bg = arg.bg or clearButton.bg
+        clearButton.fg = arg.fg or clearButton.fg
+        clearButton.w = arg.w or string.len(clearButton.text)
+    else
+        return false
+    end
 end
 
 function Field.new(arg)
@@ -103,6 +146,7 @@ function Field.new(arg)
     }), {__index=Field})
     self.placeholder = arg.placeholder
     self.onChange = arg.onChange
+    self.clearButton = initClearButton(arg.clearButton)
     return self
 end
 

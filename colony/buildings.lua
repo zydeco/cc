@@ -185,7 +185,8 @@ local filterField = UI.Field.new{
     bg=colors.lightGray, fg=colors.black,
     onChange=function(self)
         box:onShow()
-    end
+    end,
+    clearButton=true
 }
 box:add(filterField)
 
