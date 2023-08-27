@@ -51,7 +51,7 @@ local function orderRow(order, colony, isActive)
     local line3 = " {gray}unclaimed"
     if order.isClaimed and order.builder ~= nil then
         local builder = findBuilding(colony, "builder", order.builder)
-        if #builder.citizens > 0 then
+        if builder ~= nil and #builder.citizens > 0 then
           local builderName = builder.citizens[1].name
           line3 = " " .. builderName
           table.insert(tags, builderName)
