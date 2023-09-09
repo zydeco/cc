@@ -1,10 +1,10 @@
 require("colony/utils")
 
-local function traverseTree(roots, visitor, depth)
+local function traverseTree(roots, visitor, depth, parent)
     depth = depth or 1
     for index, item in ipairs(roots or {}) do
-        if visitor(item, index, depth) then
-            traverseTree(item.children, visitor, depth+1)
+        if visitor(item, index, depth, parent) then
+            traverseTree(item.children, visitor, depth+1, item)
         end
     end
 end
@@ -35,12 +35,46 @@ local function flattenResearchItem(item, tree, depth)
     }
 end
 
+local RESEARCHES_WITH_ONLY_CHILD = {
+    'minecolonies:civilian/stamina',
+    'minecolonies:civilian/higherlearning',
+    'minecolonies:combat/accuracy',
+    'minecolonies:combat/avoidance',
+    'minecolonies:combat/regeneration'
+}
+
+local function hasOnlyChild(research)
+    if research.hasOnlyChild then
+        return true
+    end
+    -- maybe it's not implemented yet
+    for index, value in ipairs(RESEARCHES_WITH_ONLY_CHILD) do
+        if research.id == value then
+            return true
+        end
+    end
+    return false
+end
+
+local function hasResearchedChild(research)
+    for index, child in ipairs(research.children or {}) do
+        if child.status ~= "NOT_STARTED" then
+            return true
+        end
+    end
+    return false
+end
+
 local function getFlattenedResearch(colony, maxDepth)
     local research = colony.getResearch()
     local result = {}
     for tree, roots in pairs(research) do
-        traverseTree(roots, function(item, index, depth)
+        traverseTree(roots, function(item, index, depth, parent)
             if depth > maxDepth then
+                return false
+            end
+            if parent ~= nil and hasOnlyChild(parent) and item.status == "NOT_STARTED" and hasResearchedChild(parent) then
+                -- another child of this only-child branch is already researched
                 return false
             end
             table.insert(result, flattenResearchItem(item, tree, depth))
