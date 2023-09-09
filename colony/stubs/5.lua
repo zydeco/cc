@@ -6298,8 +6298,6 @@ COLONY_STUB = {
     getRequests=function()
       return {
     {
-    },
-    {
       state = "IN_PROGRESS",
       count = 1,
       name = "1 Everlasting Beef",
@@ -6380,13 +6378,10 @@ COLONY_STUB = {
       end
     end,
     getBuilderResources=function(id)
+      if type(id) == "table" then id = (id.x or 0) .. "," .. (id.y or 0) .. "," .. (id.z or 0) end
       if id == nil then
         return nil
-      elseif id == {
-      y = 103,
-      x = -283,
-      z = 635,
-    } then
+      elseif id == "-283,103,635" then
         return {
       {
         needed = 24,

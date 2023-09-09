@@ -6041,8 +6041,6 @@ COLONY_STUB = {
       minCount = 1,
       desc = "1 Red Bed",
     },
-    {
-    },
     }
     end,
     getWorkOrderResources=function(id)
@@ -6436,13 +6434,10 @@ COLONY_STUB = {
       end
     end,
     getBuilderResources=function(id)
+      if type(id) == "table" then id = (id.x or 0) .. "," .. (id.y or 0) .. "," .. (id.z or 0) end
       if id == nil then
         return nil
-      elseif id == {
-      y = 108,
-      x = -214,
-      z = 529,
-    } then
+      elseif id == "-214,108,529" then
         return {
       {
         needed = 1,
@@ -6453,11 +6448,7 @@ COLONY_STUB = {
         displayName = "Campfire",
       },
     }
-      elseif id == {
-      y = 104,
-      x = -257,
-      z = 634,
-    } then
+      elseif id == "-257,104,634" then
         return {
       {
         needed = 1,
@@ -6708,11 +6699,7 @@ COLONY_STUB = {
         displayName = "Torch",
       },
     }
-      elseif id == {
-      y = 103,
-      x = -208,
-      z = 566,
-    } then
+      elseif id == "-208,103,566" then
         return {
       {
         needed = 2,

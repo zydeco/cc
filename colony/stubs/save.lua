@@ -32,8 +32,11 @@ function wf(f, name, value)
   f.writeLine("end,")
 end
 
-function wm(f, name, values)
+function wm(f, name, values, keyProcessor)
   f.writeLine(name .. "=function(id)")
+  if keyProcessor ~= nil then
+    f.writeLine("  " .. keyProcessor)
+  end
   f.writeLine("  if id == nil then")
   f.writeLine("    return nil")
   for k,v in pairs(values) do
@@ -41,6 +44,7 @@ function wm(f, name, values)
     f.writeLine("    return " .. serialize(v))
   end
   f.writeLine("  end")
+  f.writeLine("  return nil")
   f.writeLine("end,")
 end
 
@@ -76,12 +80,13 @@ for i=1,#w do
   wor[wo.id] = ci.getWorkOrderResources(wo.id)
   local builder = wo.builder
   if builder ~= nil then
-    br[builder] = ci.getBuilderResources(builder)
+    local builder_key = builder.x .. "," .. builder.y .. "," .. builder.z
+    br[builder_key] = ci.getBuilderResources(builder)
   end
 end
 
 wm(f, "getWorkOrderResources", wor)
-wm(f, "getBuilderResources", br)
+wm(f, "getBuilderResources", br, 'if type(id) == "table" then id = (id.x or 0) .. "," .. (id.y or 0) .. "," .. (id.z or 0) end')
 
 f.writeLine("}")
 f.close()
