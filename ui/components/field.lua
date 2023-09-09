@@ -85,6 +85,16 @@ function Field:onMouseUp(x, y, button)
     end
 end
 
+function Field:setText(text)
+    if self.text ~= text then
+        self.text = text
+        self:redraw()
+        if self.onChange then
+            self:onChange(text)
+        end
+    end
+end
+
 function Field:draw(term, dx, dy)
     local isActive = self.ui.keyHandler
     local text = self.text
