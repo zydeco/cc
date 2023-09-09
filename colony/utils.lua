@@ -203,6 +203,11 @@ function getById(list, id)
     error("item with id " .. id .. " not found in list")
 end
 
+local function shouldMatchWhole(word)
+    local firstChar = string.sub(word or nil, 1, 1)
+    return firstChar == "#" or firstChar == "@"
+end
+
 function shouldShowRow(row, filterText)
     if filterText == "" then
         return true
@@ -214,7 +219,7 @@ function shouldShowRow(row, filterText)
         for index, tag in ipairs(row.tags) do
             if tag == nil or tag == "" then
                 -- skip empty tag
-            elseif string.sub(tag, 1, 1) == "#" then
+            elseif shouldMatchWhole(tag) then
                 -- match whole tag?
                 if word == tag then
                     tagMatch = true

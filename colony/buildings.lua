@@ -138,11 +138,12 @@ local function findBuilding(buildings, id)
 end
 
 local function detailForBuilding(building)
+    local location = formatPos(building.location)
     local lines = {
         " ",
         "{align=center}" .. translate(building.name) .. " " .. building.level,
         "{align=center}{gray}" .. building.style,
-        "{align=center}{gray}" .. formatPos(building.location),
+        "{align=center}{gray}" .. location,
     }
 
     if not building.guarded then
@@ -151,9 +152,9 @@ local function detailForBuilding(building)
 
     if building.isWorkingOn then
         if building.built then
-            table.insert(lines, "{align=center}{blue}upgrading...")
+            table.insert(lines, "{align=center}{link=work_orders/@" .. formatPos(building.location) .. "}{blue}upgrading...{link=}")
         else
-            table.insert(lines, "{align=center}{blue}under construction")
+            table.insert(lines, "{align=center}{link=work_orders/@" .. formatPos(building.location) .. "}{blue}under construction{link=}")
         end
     end
 

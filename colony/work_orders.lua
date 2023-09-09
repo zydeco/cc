@@ -21,11 +21,13 @@ end
 
 local function orderRow(order, colony, isActive)
     -- target building
-    local line1 = order.buildingName
+    local location = formatPos(order.location)
+    local line1 = "{link=building/" .. location .. "}" .. order.buildingName .. " {gray}" .. location .. "{link=}"
     local tags = {
         order.buildingName,
         order.workOrderType,
         order.targetLevel or "",
+        "@" .. location
     }
 
     -- order type & needed resources
@@ -52,11 +54,12 @@ local function orderRow(order, colony, isActive)
     if order.isClaimed and order.builder ~= nil then
         local builder = findBuilding(colony, "builder", order.builder)
         if builder ~= nil and #builder.citizens > 0 then
-          local builderName = builder.citizens[1].name
-          line3 = " " .. builderName
-          table.insert(tags, builderName)
+            local worker = builder.citizens[1]
+            line3 = " {link=citizen/" .. worker.id .. "}" .. worker.name .. "{link=}"
+            table.insert(tags, worker.name)
+            table.insert(tags, "@" .. formatPos(order.builder))
         else
-          line3 = " {red}missing builder"
+            line3 = " {red}missing builder"
         end
     else
         table.insert(tags, "#unclaimed")
@@ -104,7 +107,7 @@ local function reloadWorkOrders(colony, filterField, countLabel, orderList, sort
     countLabel:redraw()
 end
 
-return function(colony, contentWidth, contentHeight)
+return function(colony, contentWidth, contentHeight, linkHandler)
     local box = UI.Box.new{
         x=0,y=0,w=contentWidth,h=contentHeight,bg=colors.white
     }
@@ -144,6 +147,7 @@ return function(colony, contentWidth, contentHeight)
         items={}, rowHeight=3
     }
     box:add(orderList)
+    orderList.onLink = linkHandler
 
     -- sorting
     local sortOrder = {
@@ -174,7 +178,7 @@ return function(colony, contentWidth, contentHeight)
         local helpText = UI.Label.new{
             x=1,y=0,w=helpWidth-2,h=helpHeight,bg=colors.lightGray,fg=colors.black,text=
             "\x7f\x7f\x7f Work Order Row \x7f\x7f\x7f\n"..
-            "{bg=lightBlue}Building Name         {bg=bg}\n" ..
+            "{bg=lightBlue}Building Name {gray}location{bg=bg}\n" ..
             "{bg=lightBlue} Type {gray}(status){fg}        {bg=bg}\n" ..
             "{bg=lightBlue} Builder              {bg=bg}\n" ..
             " Type: Build, Upgrade, etc\n" ..

@@ -138,6 +138,9 @@ local handleLink = function(view, link)
     elseif string.sub(link, 1, 9) == "building/" then
         local subId = string.sub(link, 10)
         openTabAndShowDetail(TAB_BUILDINGS, subId)
+    elseif string.sub(link, 1, 12) == "work_orders/" then
+        local query = string.sub(link, 13)
+        openTabAndSearch(TAB_WORK_ORDERS, query)
     end
 end
 
@@ -174,7 +177,7 @@ tabBar = UI.TabBar.new{x=0,y=1,w=w,h=h-1,bg=colors.black, tabs={
     {
         bg=colors.purple, fg=colors.black,
         key="W", name="Work Orders",
-        content=require("colony/work_orders")(colony, contentWidth, contentHeight)
+        content=require("colony/work_orders")(colony, contentWidth, contentHeight, handleLink)
     },
     {
         bg=colors.pink, fg=colors.black,

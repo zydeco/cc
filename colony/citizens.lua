@@ -136,7 +136,7 @@ local function getParents(citizens, id)
     return parents
 end
 
-local function detailForCitizen(citizenId, citizens, state)
+local function detailForCitizen(citizenId, citizens, state, colony)
     local citizen = getCitizen(citizens, citizenId)
     local homeless = citizen.home == nil
     local lines = {
@@ -180,6 +180,14 @@ local function detailForCitizen(citizenId, citizens, state)
             if math.floor(commute) > 0 then
                 table.insert(lines, dataField("", string.format("{%s}%db from home", commuteGrade, commute)))
             end
+        end
+        if work.type == "builder" then
+            local workOrders = filter(colony.getWorkOrders(), function(order)
+                return sameLocation(order.builder, work.location)
+            end)
+            local plural = ""
+            if #workOrders > 1 then plural = "s" end
+            table.insert(lines, dataField("", string.format("{link=work_orders/%s}\xbb%d work order%s{link=}", citizen.name, #workOrders, plural)))
         end
     end
 
@@ -226,10 +234,10 @@ local function detailForCitizen(citizenId, citizens, state)
     return lines
 end
 
-local function showDetailForCitizen(detailView, citizen, citizens)
+local function showDetailForCitizen(detailView, citizen, citizens, colony)
     detailView.hidden = false
     detailView.citizen = citizen
-    detailView.items = detailForCitizen(citizen, citizens, detailView.state)
+    detailView.items = detailForCitizen(citizen, citizens, detailView.state, colony)
     detailView:redraw()
 end
 
@@ -370,21 +378,21 @@ detailView.onLink = function(self, link)
     elseif string.sub(link, 1, 8) == "citizen/" then
         id = tonumber(string.sub(link, 9))
         detailView.state = {}
-    elseif string.sub(link, 1, 9) == "building/" then
+    else
         linkHandler(self, link)
         return
     end
-    showDetailForCitizen(self, id, colony.getCitizens())
+    showDetailForCitizen(self, id, colony.getCitizens(), colony)
 end
 
 box.showDetailById = function(id)
     detailView.state = {}
-    showDetailForCitizen(detailView, id, colony.getCitizens())
+    showDetailForCitizen(detailView, id, colony.getCitizens(), colony)
 end
 
 citizenList.onSelect = function(self, index, item)
     if item ~= nil then
-        showDetailForCitizen(detailView, item.citizen, colony.getCitizens())
+        showDetailForCitizen(detailView, item.citizen, colony.getCitizens(), colony)
     end
 end
 
