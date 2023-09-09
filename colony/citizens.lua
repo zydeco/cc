@@ -96,7 +96,11 @@ local function dataField(name, value)
     if name ~= "" then
         name = name .. ": "
     end
-    return string.format("%-10s%s", name, value)
+    if string.sub(value, 1, 6) == "{link=" then
+        return string.format("%-9s%s", name, value)
+    else
+        return string.format("%-10s%s", name, value)
+    end
 end
 
 local function formatHealth(citizen)
@@ -152,7 +156,7 @@ local function detailForCitizen(citizenId, citizens, state)
         table.insert(lines, dataField("  Home", "{red}none"))
     elseif not worksFromHome(citizen) then
         local home = citizen.home
-        table.insert(lines, dataField("  Home", formatBuilding(home, 16)))
+        table.insert(lines, dataField("  Home", "{link=building/" .. formatPos(home.location) .. "}\xbb" .. formatBuilding(home, 16) .. "{link=}"))
         table.insert(lines, dataField("", formatPos(home.location)))
     end
 
@@ -161,7 +165,7 @@ local function detailForCitizen(citizenId, citizens, state)
     else
         local work = citizen.work
         table.insert(lines, dataField("  Job", formatWork(work, 16)))
-        table.insert(lines, dataField("", translate(work.name)))
+        table.insert(lines, dataField("", "{link=building/" .. formatPos(work.location) .. "}\xbb" .. translate(work.name) .. "{link=}"))
         table.insert(lines, dataField("", formatPos(work.location)))
         if not homeless then
             local commute = distance(citizen.home.location, work.location)
@@ -229,7 +233,7 @@ local function showDetailForCitizen(detailView, citizen, citizens)
     detailView:redraw()
 end
 
-return function(colony, contentWidth, contentHeight)
+return function(colony, contentWidth, contentHeight, linkHandler)
 
 local box = UI.Box.new{
     x=0,y=0,w=contentWidth,h=contentHeight,bg=colors.white
@@ -366,8 +370,16 @@ detailView.onLink = function(self, link)
     elseif string.sub(link, 1, 8) == "citizen/" then
         id = tonumber(string.sub(link, 9))
         detailView.state = {}
+    elseif string.sub(link, 1, 9) == "building/" then
+        linkHandler(self, link)
+        return
     end
     showDetailForCitizen(self, id, colony.getCitizens())
+end
+
+box.showDetailById = function(id)
+    detailView.state = {}
+    showDetailForCitizen(detailView, id, colony.getCitizens())
 end
 
 citizenList.onSelect = function(self, index, item)

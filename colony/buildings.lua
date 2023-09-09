@@ -115,6 +115,28 @@ local function reloadBuildings(colony, filterField, countLabel, buildingList, so
     countLabel:redraw()
 end
 
+-- find building by 
+--- @param id string|number id or position "x,y,z"
+local function findBuilding(buildings, id)
+    if type(id) == "string" and tonumber(id) == nil then
+        -- x,y,z
+        for index, building in ipairs(buildings) do
+            if formatPos(building.location) == id then
+                return building
+            end
+        end
+    elseif tonumber(id) ~= nil then
+        -- id
+        id = tonumber(id)
+        for index, building in ipairs(buildings) do
+            if building.id == id then
+                return building
+            end
+        end
+    end
+    return nil
+end
+
 local function detailForBuilding(building)
     local lines = {
         " ",
@@ -151,7 +173,7 @@ local function detailForBuilding(building)
             table.insert(lines, "  Workers:")
         end
         for index, citizen in ipairs(building.citizens) do
-            table.insert(lines, "    {link=citizen/" .. citizen.id .. "}" .. citizen.name .. "{link=}")
+            table.insert(lines, "    {link=citizen/" .. citizen.id .. "}\xbb" .. citizen.name .. "{link=}")
         end
     end
 
@@ -165,7 +187,7 @@ local function showDetailForBuilding(detailView, building)
     detailView:redraw()
 end
 
-return function(colony, contentWidth, contentHeight)
+return function(colony, contentWidth, contentHeight, linkHandler)
 
 local box = UI.Box.new{
     x=0,y=0,w=contentWidth,h=contentHeight,bg=colors.white
@@ -285,8 +307,13 @@ local detailView = UI.Label.new{
 }
 box:add(detailView)
 
-detailView.onLink = function(self, link)
-    
+detailView.onLink = linkHandler
+
+box.showDetailById = function(id)
+    local building = findBuilding(colony.getBuildings(), id)
+    if building ~= nil then
+        showDetailForBuilding(detailView, building)
+    end
 end
 
 buildingList.onSelect = function(self, index, item)

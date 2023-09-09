@@ -112,15 +112,32 @@ local openTabAndSearch = function(tabIndex, search)
     end
 end
 
+local openTabAndShowDetail = function(tabIndex, subId)
+    tabBar:selectTab(tabIndex)
+    if subId ~= nil and tabBar.currentTab.showDetailById then
+        tabBar.currentTab.showDetailById(subId)
+    end
+end
+
+local TAB_CITIZENS = 2
+local TAB_BUILDINGS = 4
+local TAB_WORK_ORDERS = 6
+
 local handleLink = function(view, link)
     if link == "unguarded" then
-        openTabAndSearch(4, "#unguarded")
+        openTabAndSearch(TAB_BUILDINGS, "#unguarded")
     elseif link == "unbuilt" then
-        openTabAndSearch(4, "#unbuilt")
+        openTabAndSearch(TAB_BUILDINGS, "#unbuilt")
     elseif link == "unemployed" then
-        openTabAndSearch(2, "#unemployed")
+        openTabAndSearch(TAB_CITIZENS, "#unemployed")
     elseif link == "work_orders" then
-        openTabAndSearch(6)
+        openTabAndSearch(TAB_WORK_ORDERS)
+    elseif string.sub(link, 1, 8) == "citizen/" then
+        local subId = tonumber(string.sub(link, 9))
+        openTabAndShowDetail(TAB_CITIZENS, subId)
+    elseif string.sub(link, 1, 9) == "building/" then
+        local subId = string.sub(link, 10)
+        openTabAndShowDetail(TAB_BUILDINGS, subId)
     end
 end
 
@@ -137,7 +154,7 @@ tabBar = UI.TabBar.new{x=0,y=1,w=w,h=h-1,bg=colors.black, tabs={
     {
         bg=colors.lime, fg=colors.black,
         key="C", name="Citizens",
-        content=require("colony/citizens")(colony, contentWidth, contentHeight)
+        content=require("colony/citizens")(colony, contentWidth, contentHeight, handleLink)
     },
     {
         bg=colors.green, fg=colors.black,
@@ -147,7 +164,7 @@ tabBar = UI.TabBar.new{x=0,y=1,w=w,h=h-1,bg=colors.black, tabs={
     {
         bg=colors.orange, fg=colors.black,
         key="B", name="Buildings",
-        content=require("colony/buildings")(colony, contentWidth, contentHeight)
+        content=require("colony/buildings")(colony, contentWidth, contentHeight, handleLink)
     },
     {
         bg=colors.cyan, fg=colors.black,
