@@ -19,7 +19,7 @@ local function overviewText(colony)
     end
     local unemployed = countNilValues(citizens, "work")
     if unemployed > 0 then
-        table.insert(lines, string.format("  {red}%d unemployed", unemployed))
+        table.insert(lines, string.format("  {link=unemployed}{red}%d unemployed", unemployed))
     end
     local homeless = countNilValues(citizens, "home")
     if homeless > 0 then
@@ -38,12 +38,20 @@ local function overviewText(colony)
     local numberOfBuiltBuildings = countTrueValues(buildings, "built")
     table.insert(lines, overviewField("Buildings", string.format("%d/%d", numberOfBuiltBuildings, numberOfRealBuildings)))
 
+    -- unguarded
+    local numberUnguarded = countMatching(buildings, function(b)
+        return b.guarded == false
+    end)
+    if numberUnguarded > 0 then
+        table.insert(lines, string.format("  {link=unguarded}{red}%d unguarded{link=}", numberUnguarded))
+    end
+
     -- under construction
     local numberUnderConstruction = countMatching(buildings, function(b)
         return b.isWorkingOn and not b.built
     end)
     if numberUnderConstruction > 0 then
-        table.insert(lines, string.format("  {blue}%d under construction", numberUnderConstruction))
+        table.insert(lines, string.format("  {link=work_orders}{blue}%d under construction{link=}", numberUnderConstruction))
     end
 
     -- under renovation
@@ -51,7 +59,7 @@ local function overviewText(colony)
         return b.isWorkingOn and b.built
     end)
     if numberUnderRenovation > 0 then
-        table.insert(lines, string.format("  {blue}%d under renovation", numberUnderRenovation))
+        table.insert(lines, string.format("  {link=work_orders}{blue}%d under renovation{link=}", numberUnderRenovation))
     end
 
     -- work orders
@@ -65,7 +73,7 @@ local function overviewText(colony)
     return table.concat(lines, "\n")
 end
 
-return function(colony, contentWidth, contentHeight)
+return function(colony, contentWidth, contentHeight, linkHandler)
 
 local box = UI.Box.new{
     x=0,y=0,w=contentWidth,h=contentHeight,bg=colors.white
@@ -78,6 +86,7 @@ local dataLabel = UI.Label.new{
 }
 box:add(dataLabel)
 
+dataLabel.onLink = linkHandler
 box.onShow = function()
     dataLabel.text = overviewText(colony)
     dataLabel:redraw()

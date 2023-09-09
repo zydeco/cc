@@ -22,20 +22,28 @@ local function citizenRow(citizen, width)
     local stateIcon = " "
     local lowHealth = citizen.health and citizen.maxHealth and citizen.health < (citizen.maxHealth * 0.1)
     local homeless = citizen.home == nil
+    local tags = {citizen.name, "#" .. citizen.age, "#" .. citizen.gender}
     if lowHealth then
         warnIcon = "{red}\x03"
     elseif homeless then
         warnIcon = "{red}h"
+        table.insert(tags, "#homeless")
     elseif citizen.betterFood then
         warnIcon = "{red}f"
+        table.insert(tags, "#hungry")
     end
     if citizen.isAsleep then
         stateIcon = "{gray}z"
+        table.insert(tags, "#asleep")
     elseif citizen.isIdle then
         stateIcon = "{white}-"
+        table.insert(tags, "#idle")
+        table.insert(tags, "#awake")
     else
         -- working?
         stateIcon = "{blue}w"
+        table.insert(tags, "#working")
+        table.insert(tags, "#awake")
     end
     local line1 = name .. string.rep(" ", padSize) .. warnIcon .. happinessIcon .. stateIcon
     local line2 = ""
@@ -43,7 +51,6 @@ local function citizenRow(citizen, width)
     if citizen.age ~= "adult" then
         ageIcon = "{gray}" .. citizen.age
     end
-    local tags = {citizen.name, "#" .. citizen.age, "#" .. citizen.gender}
     if citizen.work then
         local jobName = translate(citizen.work.job or citizen.work.name)
         local job = formatWork(citizen.work, width - 2 - UI.strlen(ageIcon))
@@ -57,9 +64,6 @@ local function citizenRow(citizen, width)
     else
         line2 = " {red}unemployed" .. string.rep(" ", width - 11 - UI.strlen(ageIcon)) .. ageIcon
         table.insert(tags, "#unemployed")
-    end
-    if homeless then
-        table.insert(tags, "#homeless")
     end
     return {
         text=line1 .. "\n" .. line2,
@@ -249,6 +253,7 @@ local filterField = UI.Field.new{
     clearButton=true
 }
 box:add(filterField)
+box.search = function(filter) filterField:setText(filter) end
 
 local countLabel = UI.Label.new{
     x=margin + innerWidth - 5, y=1, w=5, h=1,
@@ -329,9 +334,9 @@ box:add(helpButton(contentWidth-4,0,"(?)",function()
         "\n"..
         "\x7f\x7f\x7f\x7f\x7f\x7f Filter By \x7f\x7f\x7f\x7f\x7f\n"..
         " \x04 Name, Job, Level\n"..
-        " \x04 #child, #adult\n"..
-        " \x04 #homeless\n"..
-        " \x04 #unemployed\n"..
+        " #child #adult #awake\n"..
+        " #homeless #unemployed\n"..
+        " #hungry #asleep #idle\n"..
         ""
     }
     container:add(helpText)

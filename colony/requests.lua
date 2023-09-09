@@ -69,6 +69,7 @@ return function(colony, contentWidth, contentHeight)
         clearButton=true
     }
     box:add(filterField)
+    box.search = function(filter) filterField:setText(filter) end
 
     local countLabel = UI.Label.new{
         x=margin + innerWidth - 5, y=1, w=5, h=1,

@@ -105,6 +105,25 @@ ui:addTimer(5.0, nil, function()
     end
 end)
 
+local openTabAndSearch = function(tabIndex, search)
+    tabBar:selectTab(tabIndex)
+    if search ~= nil and tabBar.currentTab.search then
+        tabBar.currentTab.search(search)
+    end
+end
+
+local handleLink = function(view, link)
+    if link == "unguarded" then
+        openTabAndSearch(4, "#unguarded")
+    elseif link == "unbuilt" then
+        openTabAndSearch(4, "#unbuilt")
+    elseif link == "unemployed" then
+        openTabAndSearch(2, "#unemployed")
+    elseif link == "work_orders" then
+        openTabAndSearch(6)
+    end
+end
+
 -- sizes
 local contentWidth = w -- 26 on pocket computer
 local contentHeight = h-3 -- 17 on pocket computer
@@ -113,7 +132,7 @@ tabBar = UI.TabBar.new{x=0,y=1,w=w,h=h-1,bg=colors.black, tabs={
     {
         bg=colors.lightGray, fg=colors.black,
         key="O", name="Overview",
-        content=require("colony/overview")(colony, contentWidth, contentHeight)
+        content=require("colony/overview")(colony, contentWidth, contentHeight, handleLink)
     },
     {
         bg=colors.lime, fg=colors.black,
