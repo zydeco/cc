@@ -61,9 +61,19 @@ local function citizenRow(citizen, width)
         line2 = jobPrefix .. job .. string.rep(" ", width - 1 - string.len(job) - UI.strlen(ageIcon)) .. ageIcon
         table.insert(tags, jobName)
         table.insert(tags, "" .. citizen.work.level)
+        table.insert(tags, "@" .. formatPos(citizen.work.location))
     else
         line2 = " {red}unemployed" .. string.rep(" ", width - 11 - UI.strlen(ageIcon)) .. ageIcon
         table.insert(tags, "#unemployed")
+    end
+    if citizen.bedPos then
+        table.insert(tags, "@" .. formatPos(citizen.bedPos))
+    end
+    if citizen.home then
+        table.insert(tags, "@" .. formatPos(citizen.home.location))
+    end
+    if citizen.location then
+        table.insert(tags, "@" .. formatPos(citizen.location))
     end
     return {
         text=line1 .. "\n" .. line2,

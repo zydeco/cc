@@ -17,7 +17,8 @@ local function visitorRow(visitor)
         visitor.name,
         "#" .. visitor.gender,
         itemName, 
-        "" .. visitor.recruitCost.count
+        "" .. visitor.recruitCost.count,
+        "@" .. formatPos(visitor.location),
     }
 
     -- best jobs

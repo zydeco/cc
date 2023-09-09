@@ -86,6 +86,7 @@ local function buildingRow(building, width)
             builtFlag,
             fillFlag,
             building.style,
+            "@" .. pos,
         },
         building=building
     }
