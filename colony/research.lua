@@ -19,7 +19,7 @@ local function allRequirementsFulfilled(requirements)
 end
 
 local function flattenResearchItem(item, tree, depth)
-    local maxProgress = 144 * (2 ^ depth)
+    local maxProgress = 144 * (2 ^ (depth-1))
     return {
         tree=tree,
         depth=depth,
