@@ -56,6 +56,9 @@ function Field:onKeyDown(key)
 end
 
 function Field:onChar(char)
+    if char == "{" then
+        char = "["
+    end
     local text = self.text
     local left = string.sub(text, 1, self.cursor)
     local right = string.sub(text, self.cursor + 1, -1)
