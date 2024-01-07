@@ -71,18 +71,26 @@ local function shouldShowClearButton(self)
     return self.text ~= "" and self.clearButton
 end
 
+local function doMouseUp(self, x)
+    if shouldShowClearButton(self) and x >= self.w - self.clearButton.w then
+        self.text = ""
+        if self.onChange then
+            self.onChange(self, self.text)
+        end
+        self:redraw()
+    else
+        focus(self.ui, self)
+    end
+end
+
 function Field:onMouseUp(x, y, button)
     if button == 1 then
-        if shouldShowClearButton(self) and x >= self.w - self.clearButton.w then
-            self.text = ""
-            if self.onChange then
-                self.onChange(self, self.text)
-            end
-            self:redraw()
-        else
-            focus(self.ui, self)
-        end
+        doMouseUp(self, x)
     end
+end
+
+function Field:onTouch(x, y)
+    doMouseUp(self, x)
 end
 
 function Field:setText(text)

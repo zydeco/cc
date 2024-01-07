@@ -193,11 +193,15 @@ local function handleField(ui)
     local term = ui.term
     local kh = ui.keyHandler
     if kh and kh ~= ui then
+        term = kh.term
         term.setTextColor(kh.cursorColor or kh.fg)
         term.setCursorPos(kh.abs.x + kh.cursor, kh.abs.y)
         term.setCursorBlink(true)
     else
-        term.setCursorBlink(false)
+        for _, monitor in pairs(ui.monitors) do
+            monitor.term.setCursorBlink(false)
+        end
+        ui.term.setCursorBlink(false)
     end
 end
 
@@ -275,6 +279,7 @@ function UI.new(term)
     local w, h = term.getSize()
     self.base = UI.Box.new{x=1, y=1, w=w, h=h, bg=colors.white}
     self.base.ui = self
+    self.base.term = self.term
     return self
 end
 
@@ -286,6 +291,7 @@ function UI:attachMonitor(side, textScale)
     local w,h = monitor.getSize()
     local base = UI.Box.new{x=1, y=1, w=w, h=h, bg=colors.white}
     base.ui = self
+    base.term = monitor
     self.monitors[side] = {
         base=base,
         term=wrapTerm(monitor)
