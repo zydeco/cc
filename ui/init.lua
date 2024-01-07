@@ -126,7 +126,7 @@ local function handleEvent(ui)
             subviews = ui.base.subviews
         end
         local hit, hitX, hitY = hitTest(subviews, p2-1, p3-1)
-        if event ~= "mouse_scroll" then
+        if event ~= "mouse_scroll" and hit ~= nil and hit ~= ui.keyboard then
             ui.keyHandler = nil
             ui.keysDown = {}
         end
@@ -197,11 +197,17 @@ local function handleField(ui)
         term.setTextColor(kh.cursorColor or kh.fg)
         term.setCursorPos(kh.abs.x + kh.cursor, kh.abs.y)
         term.setCursorBlink(true)
+        if term ~= ui.term then
+            UI.Keyboard.show(ui, term, kh)
+        else
+            UI.Keyboard.hide(ui)
+        end
     else
         for _, monitor in pairs(ui.monitors) do
             monitor.term.setCursorBlink(false)
         end
         ui.term.setCursorBlink(false)
+        UI.Keyboard.hide(ui)
     end
 end
 

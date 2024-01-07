@@ -24,12 +24,16 @@ local function stringTags(str, defaultTagName)
 end
 
 local function colorByName(name, bg, fg)
-    if name == "bg" then
+    if type(name) == "number" then
+        return name
+    elseif name == "bg" then
         return bg
     elseif name == "fg" then
         return fg
     elseif colors[name] ~= nil then
         return colors[name]
+    elseif string.match(name, "^%d+$") then
+        return tonumber(name)
     else
         error("invalid color " .. name)
     end
@@ -108,9 +112,14 @@ local function trimStyledText(items, n, align)
     end
 end
 
+-- remove tags from text
+function UI.plainText(str)
+    return string.gsub(str, "{[^}]+}", "")
+end
+
 -- length of string without counting style tags
 function UI.strlen(str)
-    return string.len(string.gsub(str, "{[^}]+}", ""))
+    return string.len(UI.plainText(str))
 end
 
 local UI_TEXT_DEFAULT_TAG = "fg"

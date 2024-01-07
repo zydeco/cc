@@ -32,9 +32,9 @@ function Box:add(subview)
     end
     table.insert(self.subviews, subview)
     subview.parent = self
-    subview.term = self.term
     forEachSubview(self, function(view)
         view.ui = self.ui
+        view.term = self.term
         view.dirty = true
     end)
 end

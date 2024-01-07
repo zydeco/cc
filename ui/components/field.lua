@@ -96,6 +96,10 @@ function Field:onTouch(x, y)
     doMouseUp(self, x)
 end
 
+function Field:blur()
+    focus(self.ui, nil)
+end
+
 function Field:setText(text)
     if self.text ~= text then
         self.text = text
