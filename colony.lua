@@ -4,6 +4,7 @@ require("colony/wrapper")
 local colony = nil
 local args = {...}
 local externalMonitor = nil
+local monitorScale = 1.0
 local remoteColonyName = nil
 local modemSide = "back"
 
@@ -24,6 +25,9 @@ if #args > 0 then
             elseif argName == "monitor" then
                 -- external monitor
                 externalMonitor = argValue
+            elseif argName == "scale" then
+                -- external monitor scale
+                monitorScale = tonumber(argValue) or 1.0
             end
         else
             -- stub
@@ -62,7 +66,7 @@ if th > 20 then
 end
 
 if externalMonitor ~= nil then
-    base = ui:attachMonitor(externalMonitor, 1.0)
+    base = ui:attachMonitor(externalMonitor, monitorScale)
     w,h = base.w, base.h
 end
 
