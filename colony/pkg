@@ -16,5 +16,6 @@
         "work_orders.lua",
         "stubs/save.lua",
         "server.lua",
+        "wrapper.lua",
     },
 }

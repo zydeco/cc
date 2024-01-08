@@ -1,103 +1,50 @@
 require("ui")
+require("colony/wrapper")
 
 local colony = nil
 local args = {...}
-if #args == 1 then
-    require("colony/stubs/" .. args[1])
-    colony = COLONY_STUB
-elseif #args == 0 then
-    colony = peripheral.find("colonyIntegrator")
-    if colony == nil then
-        print("No colony integrator")
-        return 1
-    end
-end
+local externalMonitor = nil
+local remoteColonyName = nil
+local modemSide = "back"
 
-local function wrapColony(colonyIntegrator)
-    local wrapper = {}
-
-    local function wrappedCall(originalFunction, defaultValue)
-        return function()
-            local result = defaultValue
-            pcall(function()
-                result = originalFunction()
-            end)
-            return result
-        end
-    end
-
-    wrapper.getColonyName = wrappedCall(colonyIntegrator.getColonyName, "{red}No colony")
-    wrapper.getHappiness = wrappedCall(colonyIntegrator.getHappiness, 0.0)
-    wrapper.getCitizens = wrappedCall(colonyIntegrator.getCitizens, {})
-    wrapper.amountOfCitizens = wrappedCall(colonyIntegrator.amountOfCitizens, 0)
-    wrapper.maxOfCitizens = wrappedCall(colonyIntegrator.maxOfCitizens, 0)
-    wrapper.getVisitors = wrappedCall(colonyIntegrator.getVisitors, {})
-    wrapper.getBuildings = wrappedCall(colonyIntegrator.getBuildings, {})
-    wrapper.getWorkOrders = wrappedCall(colonyIntegrator.getWorkOrders, {})
-    wrapper.getRequests = wrappedCall(colonyIntegrator.getRequests, {})
-    wrapper.getResearch = wrappedCall(colonyIntegrator.getResearch, {})
-
-    wrapper.getWorkOrderResources = function(orderId)
-        local result = {}
-        pcall(function()
-            result = colonyIntegrator.getWorkOrderResources(orderId)
-        end)
-        return result
-    end
-
-    return wrapper
-end
-
-local function wrapRemoteColony(colonyName, side)
-    local wrapper = {}
-    local timeout = 2
-    local protocol = "colony"
-
-    -- open rednet
-    rednet.open(side)
-    if not rednet.isOpen(side) then
-        print("Rednet not open. Ensure modem exists.")
-        exit()
-    end
-
-    -- find colony
-    print("Looking for colony...")
-    local remote = rednet.lookup(protocol, colonyName)
-    if remote == nil then
-        print("Colony not found")
-        exit()
-    end
-    print("Found colony computer ID " .. remote)
-    local function remoteCall(functionName, defaultValue)
-        return function(arg)
-            local result = defaultValue
-            rednet.send(remote, {call=functionName, arg=arg}, protocol)
-            local _, message = rednet.receive(protocol, timeout)
-            if message ~= nil then
-                result = message
+-- parse arguments
+if #args > 0 then
+    for _, arg in ipairs(args) do
+        if string.sub(arg, 1, 2) == "--" then
+            -- named argument
+            local equals = string.find(arg, "=")
+            local argName = string.sub(arg, 3, equals-1)
+            local argValue = string.sub(arg, equals+1, -1)
+            if argName == "modem" then
+                -- modem side
+                modemSide = argValue
+            elseif argName == "remote" then
+                -- remote colony
+                remoteColonyName = argValue
+            elseif argName == "monitor" then
+                -- external monitor
+                externalMonitor = argValue
             end
-            return result
+        else
+            -- stub
+            require("colony/stubs/" .. args[1])
+            colony = COLONY_STUB
         end
     end
-
-    wrapper.getColonyName = remoteCall("getColonyName", "{red}No colony")
-    wrapper.getHappiness = remoteCall("getHappiness", 0.0)
-    wrapper.getCitizens = remoteCall("getCitizens", {})
-    wrapper.amountOfCitizens = remoteCall("amountOfCitizens", 0)
-    wrapper.maxOfCitizens = remoteCall("maxOfCitizens", 0)
-    wrapper.getVisitors = remoteCall("getVisitors", {})
-    wrapper.getBuildings = remoteCall("getBuildings", {})
-    wrapper.getWorkOrders = remoteCall("getWorkOrders", {})
-    wrapper.getRequests = remoteCall("getRequests", {})
-    wrapper.getResearch = remoteCall("getResearch", {})
-    wrapper.getWorkOrderResources = remoteCall("getWorkOrderResources", {})
-    return wrapper
 end
 
-if #args >= 2 and args[1] == "remote" then
-    colony = wrapRemoteColony(args[2], args[3] or "back")
-else
-    colony = wrapColony(colony)
+-- find colony
+if colony == nil then
+    if remoteColonyName ~= nil then
+        colony = wrapRemoteColony(remoteColonyName, modemSide)
+    else
+        colony = peripheral.find("colonyIntegrator")
+        if colony == nil then
+            print("No colony integrator")
+            return 1
+        end
+        colony = wrapColony(colony)
+    end
 end
 
 local screen = term.current()
@@ -114,8 +61,10 @@ if th > 20 then
     ui.debug = window.create(term.current(), 1,th,tw,1)
 end
 
---base = ui:attachMonitor("left", 1.0)
---w,h = base.w, base.h
+if externalMonitor ~= nil then
+    base = ui:attachMonitor(externalMonitor, 1.0)
+    w,h = base.w, base.h
+end
 
 require("colony/utils")
 
