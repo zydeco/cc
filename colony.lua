@@ -5,7 +5,7 @@ local args = {...}
 if #args == 1 then
     require("colony/stubs/" .. args[1])
     colony = COLONY_STUB
-else
+elseif #args == 0 then
     colony = peripheral.find("colonyIntegrator")
     if colony == nil then
         print("No colony integrator")
@@ -48,7 +48,57 @@ local function wrapColony(colonyIntegrator)
     return wrapper
 end
 
-colony = wrapColony(colony)
+local function wrapRemoteColony(colonyName, side)
+    local wrapper = {}
+    local timeout = 2
+    local protocol = "colony"
+
+    -- open rednet
+    rednet.open(side)
+    if not rednet.isOpen(side) then
+        print("Rednet not open. Ensure modem exists.")
+        exit()
+    end
+
+    -- find colony
+    print("Looking for colony...")
+    local remote = rednet.lookup(protocol, colonyName)
+    if remote == nil then
+        print("Colony not found")
+        exit()
+    end
+    print("Found colony computer ID " .. remote)
+    local function remoteCall(functionName, defaultValue)
+        return function(arg)
+            local result = defaultValue
+            rednet.send(remote, {call=functionName, arg=arg}, protocol)
+            local _, message = rednet.receive(protocol, timeout)
+            if message ~= nil then
+                result = message
+            end
+            return result
+        end
+    end
+
+    wrapper.getColonyName = remoteCall("getColonyName", "{red}No colony")
+    wrapper.getHappiness = remoteCall("getHappiness", 0.0)
+    wrapper.getCitizens = remoteCall("getCitizens", {})
+    wrapper.amountOfCitizens = remoteCall("amountOfCitizens", 0)
+    wrapper.maxOfCitizens = remoteCall("maxOfCitizens", 0)
+    wrapper.getVisitors = remoteCall("getVisitors", {})
+    wrapper.getBuildings = remoteCall("getBuildings", {})
+    wrapper.getWorkOrders = remoteCall("getWorkOrders", {})
+    wrapper.getRequests = remoteCall("getRequests", {})
+    wrapper.getResearch = remoteCall("getResearch", {})
+    wrapper.getWorkOrderResources = remoteCall("getWorkOrderResources", {})
+    return wrapper
+end
+
+if #args >= 2 and args[1] == "remote" then
+    colony = wrapRemoteColony(args[2], args[3] or "back")
+else
+    colony = wrapColony(colony)
+end
 
 local screen = term.current()
 local tw,th = term.current().getSize()

@@ -14,6 +14,7 @@
         "research.lua",
         "visitors.lua",
         "work_orders.lua",
-        "stubs/save.lua"
+        "stubs/save.lua",
+        "server.lua",
     },
 }
