@@ -1,4 +1,4 @@
-local Button = require("ui/components/Button")
+local Button = require("ui/components/button")
 local Keyboard = setmetatable({}, {__index = Button})
 Keyboard.__index = Keyboard
 
