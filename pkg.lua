@@ -121,7 +121,7 @@ local function install(pkg)
     print("Downloading " .. pkg.name .. " " .. pkg.version)
     for i = 1, #pkg.files do
         local file = pkg.files[i]
-        local url = pkg.baseUrl .. "/" .. file
+        local url = pkg.baseUrl .. "/" .. file .. "?" .. math.random()
         files[file] = httpGet(url)
     end
     -- install
