@@ -14,6 +14,10 @@ if #args > 0 then
         if string.sub(arg, 1, 2) == "--" then
             -- named argument
             local equals = string.find(arg, "=")
+            if equals == nil then
+                print("Argument should have a value: " .. arg)
+                return
+            end
             local argName = string.sub(arg, 3, equals-1)
             local argValue = string.sub(arg, equals+1, -1)
             if argName == "modem" then
@@ -40,6 +44,10 @@ end
 -- find colony
 if colony == nil then
     if remoteColonyName ~= nil then
+        if remoteColonyName=="?" then
+            listRemoteColonies()
+            return
+        end
         colony = wrapRemoteColony(remoteColonyName, modemSide)
     else
         colony = peripheral.find("colonyIntegrator")

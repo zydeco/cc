@@ -81,3 +81,35 @@ function wrapRemoteColony(colonyName, side)
     wrapper.highlightWorker = remoteCall("highlightBuilding", false) --  arg {}
     return wrapper
 end
+
+local function getRemoteColonyName(id)
+    rednet.send(id, {call="getColonyName"}, "colony")
+    local _, message = rednet.receive("colony", 2)
+    return message
+end
+
+function listRemoteColonies(side)
+    local protocol = "colony"
+
+    -- open rednet
+    rednet.open(side)
+    if not rednet.isOpen(side) then
+        print("Rednet not open. Ensure modem exists.")
+        exit()
+    end
+
+    -- find colonies
+    print("Looking for colonies...")
+    local remotes = {rednet.lookup(protocol)}
+    if #remotes == 0 then
+        print("No colonies found")
+        return
+    end
+
+    -- print results
+    print("Found " .. #remotes .. " colony server(s):")
+    for _, remote in ipairs(remotes) do
+        local name = getRemoteColonyName(remote)
+        print(name)
+    end
+end
