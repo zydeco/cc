@@ -1,6 +1,9 @@
 -- handle strings with color tags
 -- example: "hello, {red}world{fg}!" -> {"hello, ", {tag="red"}, "world", {tag="fg"}, "!"}
 local function stringTags(str, defaultTagName)
+    if string.sub(str, 1, 7) == "{plain}" then
+        return {string.sub(str, 8)}
+    end
     defaultTagName = defaultTagName or "tag"
     local parts = {}
     local parseTag = function(tag)
@@ -114,6 +117,9 @@ end
 
 -- remove tags from text
 function UI.plainText(str)
+    if string.sub(str, 1, 7) == "{plain}" then
+        return string.sub(str, 8)
+    end
     return string.gsub(str, "{[^}]+}", "")
 end
 
