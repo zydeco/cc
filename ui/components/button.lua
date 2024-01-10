@@ -15,17 +15,23 @@ function Button.new(arg)
         verticalAlign=arg.verticalAlign or UI.MIDDLE,
         hidden=arg.hidden,
     }), {__index=Button})
-    if arg.action then
+    self.action = arg.action
+    if arg.onMouseUp == nil then
         self.onMouseUp = function(self, x, y, button)
-            if button == 1 then
-                arg.action(self)
+            if button == 1 and self.action then
+                self.action(self)
             end
-        end
-        self.onTouch = function(self, x, y)
-            arg.action(self)
         end
     else
         self.onMouseUp = arg.onMouseUp
+    end
+    if arg.onTouch == nil then
+        self.onTouch = function(self, x, y)
+            if self.action then
+                self.action(self)
+            end
+        end
+    else
         self.onTouch = arg.onTouch
     end
     return self
