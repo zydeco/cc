@@ -1,0 +1,8 @@
+{
+    name="netex",
+    version="1.0",
+    dst="netex/",
+    files={
+        "../netex.lua",
+    },
+}
