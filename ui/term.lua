@@ -132,6 +132,20 @@ function wrapTerm(term)
         wt.dirty = true
     end
 
+    function wt.blit(text, fg, bg)
+        if wt.direct then
+            term.blit(text, fg, bg)
+        end
+        if wt.lines[wt.y] == nil then
+            return
+        end
+        local w = wt.w - wt.x + 1
+        wt.lines[wt.y][1] = stringInsert(wt.lines[wt.y][1], wt.x, text:sub(1,w))
+        wt.lines[wt.y][2] = stringInsert(wt.lines[wt.y][2], wt.x, fg:sub(1,w))
+        wt.lines[wt.y][3] = stringInsert(wt.lines[wt.y][3], wt.x, bg:sub(1,w))
+        wt.dirty = true
+    end
+
     local function hasChangedLine(y)
         local line = wt.lines[y]
         local prev = wt.previousLines[y]

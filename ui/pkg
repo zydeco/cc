@@ -16,6 +16,7 @@
         "components/menu.lua",
         "components/keyboard.lua",
         "components/progressbar.lua",
+        "components/image.lua",
         "term.lua",
         "text.lua",
         "utils.lua",
