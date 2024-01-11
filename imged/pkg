@@ -1,0 +1,8 @@
+{
+    name="imged",
+    version="1.0",
+    dst="imged/",
+    files={
+        "../imged.lua",
+    },
+}
