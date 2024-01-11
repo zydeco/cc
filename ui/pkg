@@ -15,6 +15,7 @@
         "components/radiobutton.lua",
         "components/menu.lua",
         "components/keyboard.lua",
+        "components/progressbar.lua",
         "term.lua",
         "text.lua",
         "utils.lua",

@@ -27,6 +27,22 @@ ui:addTimer(1.0, nil, function()
     timeLabel:redraw()
 end)
 
+local charWidth = 1.0 / (tw - 2)
+local pbar = UI.ProgressBar.new{
+    x=1, y=1, w=tw-2, h=1,
+    bg=colors.gray, fg=colors.green, textColor=colors.white, align=UI.LEFT,
+    progress=charWidth*6.5, text="x%"
+}
+pbar.onScroll=function(self, x, y, direction)
+    if direction > 0 then
+        self:setProgress(self.progress + (charWidth * 0.2))
+    else
+        self:setProgress(self.progress - (charWidth * 0.2))
+    end
+    self.text = tostring(math.floor(self.progress * 100)) .. "%"
+end
+base:add(pbar)
+
 local field = UI.Field.new{
     placeholder={
         text="Hello, world",
