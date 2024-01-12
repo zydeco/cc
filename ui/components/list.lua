@@ -14,6 +14,7 @@ function List.new(arg)
     }), {__index=List})
     self.fg = arg.fg or colors.black
     self.onSelect = arg.onSelect
+    self.onLink = arg.onLink
     self.items = arg.items
     self.rowHeight = arg.rowHeight or 1
     self.bgAlternate = arg.bgAlternate or arg.bg or colors.lightGray

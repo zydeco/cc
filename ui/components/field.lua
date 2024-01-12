@@ -45,8 +45,18 @@ function Field:onKeyDown(key)
     elseif key == keys.delete then
         self.text = ""
         self.cursor = 0
-    elseif key == keys.tab or key == keys.enter then
-        focus(self.ui, self.nextField)
+    elseif key == keys.tab then
+        if self.onTab then
+            self:onTab()
+        else
+            focus(self.ui, self.nextField)
+        end
+    elseif key == keys.enter then
+        if self.onEnter then
+            self:onEnter()
+        else
+            focus(self.ui, self.nextField)
+        end
     elseif key == keys.home or key == keys.up then
         self.cursor = 0
     elseif key == keys["end"] or key == keys.down then
@@ -171,6 +181,8 @@ function Field.new(arg)
     }), {__index=Field})
     self.placeholder = arg.placeholder
     self.onChange = arg.onChange
+    self.onEnter = arg.onEnter
+    self.onTab = arg.onTab
     self.clearButton = initClearButton(arg.clearButton)
     return self
 end
