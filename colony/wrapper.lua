@@ -43,7 +43,7 @@ function wrapRemoteColony(colonyName, side)
     rednet.open(side)
     if not rednet.isOpen(side) then
         print("Rednet not open. Ensure modem exists.")
-        exit()
+        return nil
     end
 
     -- find colony
@@ -51,7 +51,7 @@ function wrapRemoteColony(colonyName, side)
     local remote = rednet.lookup(protocol, colonyName)
     if remote == nil then
         print("Colony not found")
-        exit()
+        return nil
     end
     print("Found colony computer ID " .. remote)
     local function remoteCall(functionName, defaultValue)
@@ -95,7 +95,7 @@ function listRemoteColonies(side)
     rednet.open(side)
     if not rednet.isOpen(side) then
         print("Rednet not open. Ensure modem exists.")
-        exit()
+        return
     end
 
     -- find colonies
