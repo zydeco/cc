@@ -111,7 +111,7 @@ local function handleKeyboardShortcut(ui)
 end
 
 local function handleEvent(ui)
-    local event, p1, p2, p3 = os.pullEvent()
+    local event, p1, p2, p3, p4, p5 = os.pullEvent()
     if ui.debug and string.sub(event, 1, 6) ~= "_CCPC_" then
         ui.msg = (event or "") .. "," .. tostring(p1) .. "," .. tostring(p2) .. "," .. tostring(p3)
     end
@@ -155,7 +155,7 @@ local function handleEvent(ui)
         local timer = ui.timers[p1]
         ui.timers[p1] = nil
         -- fire
-        if timer.view == nil or (timer.view.hidden == false and hasView(ui.views, timer.view)) then
+        if timer.view == nil or (timer.view.hidden == false and hasView(ui.roots, timer.view)) then
             timer.action(timer.arg)
         end
         -- reschedule
@@ -183,9 +183,13 @@ local function handleEvent(ui)
         if ui.keyHandler and ui.keyHandler.onKeyUp then
             ui.keyHandler.onKeyUp(ui.keyHandler, p1)
         end
-    elseif event == "char" and ui.keyHandler and ui.keyHandler.onChar then
+    elseif event == "char" then
         -- onChar(self, char)
-        ui.keyHandler.onChar(ui.keyHandler, p1)
+        if ui.keyHandler and ui.keyHandler.onChar then
+            ui.keyHandler.onChar(ui.keyHandler, p1)
+        end
+    elseif ui.eventHandlers[event] ~= nil then
+        ui.eventHandlers[event](p1, p2, p3, p4, p5)
     end
 end
 
@@ -271,6 +275,14 @@ function UI:addTimer(interval, times, action, arg, view)
     return timer
 end
 
+function UI:addEventHandler(event, handler)
+    self.eventHandlers[event] = handler
+end
+
+function UI:removeEventHandler(event)
+    self.eventHandlers[event] = nil
+end
+
 require("ui/components")
 require("ui/term")
 
@@ -280,12 +292,14 @@ function UI.new(term)
         term=wrapTerm(term),
         timers={},
         keyboardShortcuts={},
-        monitors={}
+        monitors={},
+        eventHandlers={}
     }, {__index=UI})
     local w, h = term.getSize()
     self.base = UI.Box.new{x=1, y=1, w=w, h=h, bg=colors.white}
     self.base.ui = self
     self.base.term = self.term
+    self.roots = {self.base}
     return self
 end
 
@@ -302,6 +316,7 @@ function UI:attachMonitor(side, textScale)
         base=base,
         term=wrapTerm(monitor)
     }
+    table.insert(self.roots, base)
     clearScreen(monitor)
     return base
 end
