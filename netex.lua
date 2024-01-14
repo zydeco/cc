@@ -134,7 +134,10 @@ local function prepareCall(path)
                 end)
             end
         end
-        argsField.onEnter = doCall
+        argsField.onEnter = function(self)
+            self:blur()
+            doCall()
+        end
         callBox:add(argsField)
         callBox:add(argsError)
         local callButtonWidth = 6
