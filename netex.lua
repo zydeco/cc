@@ -117,7 +117,7 @@ local function prepareCall(path)
             x=1,y=1,w=base.w-2,h=1,fg=colors.black,text="Args:"
         })
         argsField = UI.Field.new{
-            x=1,y=2,w=base.w-2,h=1,bg=colors.lightBlue,fg=colors.black,placeholder={text="1,2,3",color=colors.lightGray}
+            x=1,y=2,w=base.w-2,h=1,bg=colors.lightBlue,fg=colors.black,placeholder={text="1,2,3",color=colors.lightGray},clearButton=true
         }
         argsError = UI.Label.new{
             x=1,y=3,w=base.w-2,h=1,fg=colors.red,text=""
