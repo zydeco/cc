@@ -9,29 +9,34 @@ local remoteColonyName = nil
 local modemSide = "back"
 
 -- parse arguments
+local function parseArg(keyValue)
+    local equals = string.find(keyValue, "=")
+    if equals == nil then
+        return string.sub(keyValue, 3), nil
+    end
+    return string.sub(keyValue, 3, equals-1), string.sub(keyValue, equals+1, -1)
+end
+
 if #args > 0 then
     for _, arg in ipairs(args) do
         if string.sub(arg, 1, 2) == "--" then
             -- named argument
-            local equals = string.find(arg, "=")
-            if equals == nil then
-                print("Argument should have a value: " .. arg)
-                return
-            end
-            local argName = string.sub(arg, 3, equals-1)
-            local argValue = string.sub(arg, equals+1, -1)
-            if argName == "modem" then
+            local argName, argValue = parseArg(arg)
+            if argName == "modem" and argValue ~= nil then
                 -- modem side
                 modemSide = argValue
             elseif argName == "remote" then
                 -- remote colony
-                remoteColonyName = argValue
-            elseif argName == "monitor" then
+                remoteColonyName = argValue or "?"
+            elseif argName == "monitor" and argValue ~= nil then
                 -- external monitor
                 externalMonitor = argValue
-            elseif argName == "scale" then
+            elseif argName == "scale" and argValue ~= nil then
                 -- external monitor scale
                 monitorScale = tonumber(argValue) or 1.0
+            else
+                print("Invalid argument " .. arg)
+                return
             end
         else
             -- stub
@@ -44,11 +49,13 @@ end
 -- find colony
 if colony == nil then
     if remoteColonyName ~= nil then
+        rednet.open(modemSide)
         if remoteColonyName=="?" then
-            listRemoteColonies()
-            return
+            colony = wrapRemoteColony(nil, modemSide)
+        else
+            colony = wrapRemoteColony(remoteColonyName, modemSide)
+            if colony == nil then return end
         end
-        colony = wrapRemoteColony(remoteColonyName, modemSide)
     else
         colony = peripheral.find("colonyIntegrator")
         if colony == nil then
@@ -83,11 +90,58 @@ require("colony/utils")
 local statusBarWidth = 8 + digits(os.day())
 
 -- colony name
-local nameLabel = UI.Label.new{
-    x=0,y=0,w=w-statusBarWidth,h=1,text=colony.getColonyName(),
-    bg=colors.black, fg=colors.white
-}
-base:add(nameLabel)
+local colonyMenu = nil
+local tabBar = nil
+
+
+local function loadRemoteColonies()
+    colonyMenu.items = {
+        {},
+        {text="Reload", onSelect = loadRemoteColonies},
+        {text="Quit", onSelect = function() ui:stop() end }
+    }
+    rednet.broadcast(nil, "colony_query")
+end
+
+if remoteColonyName ~= nil then
+    local menuName = "Colony \x1f"
+    if remoteColonyName ~= "?" then
+        menuName = remoteColonyName
+    end
+    colonyMenu = UI.Menu.new{
+        x=0,y=0,w=w-statusBarWidth,h=1,text=menuName,
+        bg=colors.black, fg=colors.white,
+        onSelect = function(self, index, selectedItem)
+            if selectedItem.server then
+                remoteColonyName = selectedItem.text
+                colonyMenu.text = remoteColonyName
+                colony.remote = selectedItem.server
+                for i = 1, #colonyMenu.items-3 do
+                    local item = colonyMenu.items[i]
+                    item.marked = (item.server == selectedItem.server)
+                end
+                colonyMenu:redraw()
+                if tabBar.currentTab.refresh then
+                    tabBar.currentTab.refresh()
+                end
+            end
+        end
+    }
+    base:add(colonyMenu)
+    ui:addEventHandler("rednet_message", function(sender, message, protocol)
+        if protocol == "colony_query" then
+            table.insert(colonyMenu.items, #colonyMenu.items-2, {text=message.name, server=sender})
+        end
+    end)
+    loadRemoteColonies()
+else
+    error("not now")
+    local nameLabel = UI.Label.new{
+        x=0,y=0,w=w-statusBarWidth,h=1,text=colony.getColonyName(),
+        bg=colors.black, fg=colors.white
+    }
+    base:add(nameLabel)
+end
 
 -- date/time
 local statusBar = UI.Label.new{
@@ -102,13 +156,7 @@ base:add(statusBar)
 
 -- update every 6 game minutes (5 seconds)
 -- TODO: accurately
-local tabBar = nil
 ui:addTimer(5.0, nil, function()
-    local newName = colony.getColonyName()
-    if newName ~= nameLabel.text then
-        nameLabel.text = newName
-        nameLabel:redraw()
-    end
     statusBar.text = formatTime()
     statusBar:redraw()
     if tabBar and tabBar.currentTab and tabBar.currentTab.refresh then

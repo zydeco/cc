@@ -12,6 +12,7 @@ function wrapColony(colonyIntegrator)
         end
     end
 
+    if colonyIntegrator == nil then colonyIntegrator = {} end
     wrapper.getColonyName = wrappedCall(colonyIntegrator.getColonyName, "{red}No colony")
     wrapper.getHappiness = wrappedCall(colonyIntegrator.getHappiness, 0.0)
     wrapper.getCitizens = wrappedCall(colonyIntegrator.getCitizens, {})
@@ -34,33 +35,40 @@ function wrapColony(colonyIntegrator)
     return wrapper
 end
 
-function wrapRemoteColony(colonyName, side)
+function wrapRemoteColony(colonyNameOrServerId, side)
     local wrapper = {}
     local timeout = 2
     local protocol = "colony"
 
     -- open rednet
-    rednet.open(side)
     if not rednet.isOpen(side) then
-        print("Rednet not open. Ensure modem exists.")
-        return nil
+        error("Rednet not open. Ensure modem exists.")
     end
 
     -- find colony
-    print("Looking for colony...")
-    local remote = rednet.lookup(protocol, colonyName)
-    if remote == nil then
-        print("Colony not found")
-        return nil
+    local remote = nil
+    if type(colonyNameOrServerId) == "string" then
+        remote = rednet.lookup(protocol, colonyNameOrServerId)
+        if remote == nil then
+            print("Colony not found")
+            return nil
+        end
+    elseif type(colonyNameOrServerId) == "number" then
+        remote = colonyNameOrServerId
+    elseif colonyNameOrServerId == nil then
+        -- valid when no colony is wrapped
     end
-    print("Found colony computer ID " .. remote)
+    wrapper.remote = remote
     local function remoteCall(functionName, defaultValue)
         return function(arg)
+            if wrapper.remote == nil then
+                return defaultValue
+            end
             local result = defaultValue
-            rednet.send(remote, {call=functionName, arg=arg}, protocol)
+            rednet.send(wrapper.remote, {call=functionName, arg=arg}, protocol)
             local _, message = rednet.receive(protocol, timeout)
-            if message ~= nil then
-                result = message
+            if message ~= nil and message.call == functionName then
+                result = message.result
             end
             return result
         end
@@ -80,36 +88,4 @@ function wrapRemoteColony(colonyName, side)
     wrapper.highlightWorker = remoteCall("highlightWorker", false) -- arg {id=123}
     wrapper.highlightWorker = remoteCall("highlightBuilding", false) --  arg {}
     return wrapper
-end
-
-local function getRemoteColonyName(id)
-    rednet.send(id, {call="getColonyName"}, "colony")
-    local _, message = rednet.receive("colony", 2)
-    return message
-end
-
-function listRemoteColonies(side)
-    local protocol = "colony"
-
-    -- open rednet
-    rednet.open(side)
-    if not rednet.isOpen(side) then
-        print("Rednet not open. Ensure modem exists.")
-        return
-    end
-
-    -- find colonies
-    print("Looking for colonies...")
-    local remotes = {rednet.lookup(protocol)}
-    if #remotes == 0 then
-        print("No colonies found")
-        return
-    end
-
-    -- print results
-    print("Found " .. #remotes .. " colony server(s):")
-    for _, remote in ipairs(remotes) do
-        local name = getRemoteColonyName(remote)
-        print(name)
-    end
 end
