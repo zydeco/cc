@@ -1,0 +1,9 @@
+{
+    name="scada",
+    version="1.0",
+    dst="scada/",
+    files={
+        "power.lua",
+        "demo/power.lua",
+    },
+}
